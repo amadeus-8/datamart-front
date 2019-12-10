@@ -1,0 +1,7 @@
+import './axios'
+import './base'
+import './chartist'
+import './vuetify'
+import './vee-validate'
+// import './moment'
+// import './vue-world-map'

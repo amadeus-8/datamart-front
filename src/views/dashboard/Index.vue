@@ -21,10 +21,10 @@
         }
     },
     components: {
-      DashboardCoreAppBar: () => import('./components/core/AppBar'),
-      DashboardCoreDrawer: () => import('./components/core/Drawer'),
-      DashboardCoreFilter: () => import('./components/core/Filter'),
-      DashboardCoreView: () => import('./components/core/View')
+      DashboardCoreAppBar: () => import('./components/core/DashboardCoreAppBar'),
+      DashboardCoreDrawer: () => import('./components/core/DashboardCoreDrawer'),
+      DashboardCoreFilter: () => import('./components/core/DashboardCoreFilter'),
+      DashboardCoreView: () => import('./components/core/DashboardCoreView')
     },
     data: () => ({
       expandOnHover: false

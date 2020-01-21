@@ -135,24 +135,19 @@
         <template v-slot:default>
           <thead>
           <tr>
-            <th class="text-left">Город</th>
-            <th>Количество</th>
-            <th>Сумма</th>
-            <th>ВТС Сумма</th>
-            <th>Сумма выплат</th>
-            <th>Количество выплат</th>
-            <th>Кросс сумма</th>
+            <th class="text-left">{{ summary_region_table_result.property }}</th>
+            <th v-for="(item, key) in summary_region_table_result.labels">{{ item }}</th>
           </tr>
           </thead>
           <tbody>
-          <tr v-for="(item, key) in summary_region_table_result.labels" >
-            <td>{{ item }}</td>
-            <td>{{ summary_region_table_result.counts[key] }}</td>
-            <td>{{ summary_region_table_result.sums[key] }}</td>
+          <tr v-for="(item, key) in summary_region_table_result.data" >
+            <td>{{ key }}</td>
+            <td v-for="(items, keys) in item.sums" >{{ items }}</td>
+            <!--td>{{ summary_region_table_result.sums[key] }}</td>
             <td>{{ summary_region_table_result.avgs[key] }}</td>
             <td>{{ summary_region_table_result.payout_sums[key] }}</td>
             <td>{{ summary_region_table_result.payout_counts[key] }}</td>
-            <td>{{ summary_region_table_result.cross_cums[key] }}</td>
+            <td>{{ summary_region_table_result.cross_cums[key] }}</td-->
             <!--td>{{ item }}</td>
             <td>{{item.ogpo_vts_result}}</td>
             <td>{{ item.vts_cross_result }}</td>
@@ -310,21 +305,21 @@
         },
 
         sendFilters() {
-          //this.getRegionsReportData();
-          // this.setReportsloading(true);
-          axios.post('/create_summary_table',{
-            region_id: this.region_id,
-            from_date: this.from_date,
-            to_date: this.to_date,
-            gender: this.gender,
-            age_category: this.age_category,
-            insurance_class: this.insurance_class,
-          }).then(response => {
-            this.setFilters(response.data);
-            this.getRegionsReportData();
-            this.getAgeReportData();
-            // this.setReportsloading(false);
-          });
+          this.getRegionsReportData();
+          // // this.setReportsloading(true);
+          // axios.post('/create_summary_table',{
+          //   region_id: this.region_id,
+          //   from_date: this.from_date,
+          //   to_date: this.to_date,
+          //   gender: this.gender,
+          //   age_category: this.age_category,
+          //   insurance_class: this.insurance_class,
+          // }).then(response => {
+          //   this.setFilters(response.data);
+          //   this.getRegionsReportData();
+          //   this.getAgeReportData();
+          //   // this.setReportsloading(false);
+          // });
         },
         setFilters(response) {
           this.summary_table_result = response;

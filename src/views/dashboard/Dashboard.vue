@@ -14,8 +14,6 @@
           color="green"
           icon="mdi-cash"
           title="Сумма убытков/продаж"
-          :value="$humanizeNumber(generalReport.payout_sum) + ' /' + $humanizeNumber(generalReport.vts_overall_sum)"
-          :loading="reportsloading"
           small-value="Тг"
           sub-icon="mdi-filter"
           :sub-text="filters_label"
@@ -31,8 +29,6 @@
           color="primary"
           icon="mdi-counter"
           title="Кол-во убытков/продаж"
-          :loading="reportsloading"
-          :value="$humanizeNumber(generalReport.vts_lost_count) + '/' + $humanizeNumber(generalReport.count)"
           sub-icon="mdi-filter"
           :sub-text="filters_label"
         />
@@ -47,8 +43,6 @@
           color="success"
           icon="mdi-plus"
           title="Суммы кросс продаж/огпо втс"
-          :value="$humanizeNumber(generalReport.vts_cross_result) + '/' + $humanizeNumber(generalReport.ogpo_vts_result)"
-          :loading="reportsloading"
           small-value="Тг"
           sub-icon="mdi-filter"
           :sub-text="filters_label"
@@ -63,12 +57,12 @@
           <div class="ml-0 text-right">
             <strong
               class="h5 font-weight-light">
-              <v-btn color="warning" small @click="ageCategoryReport.view = 'bar_chart'">Bar chart</v-btn>
-              <v-btn color="warning" small @click="ageCategoryReport.view = 'table'">Table</v-btn>
-              <v-btn color="warning" small @click="ageCategoryReport.view = 'pie'">Pie</v-btn>
+              <v-btn color="warning" small >Bar chart</v-btn>
+              <v-btn color="warning" small >Table</v-btn>
+              <v-btn color="warning" small >Pie</v-btn>
             </strong>
           </div>
-          <ages-report :view="ageCategoryReport.view"></ages-report>
+<!--          <ages-report ></ages-report>-->
           <v-icon
             color="green"
             size="16"
@@ -89,12 +83,12 @@
           <div class="ml-0 text-right">
             <strong
               class="h5 font-weight-light">
-              <v-btn color="warning" small @click="regionsReport.view = 'bar_chart'">Bar chart</v-btn>
-              <v-btn color="warning" small @click="regionsReport.view = 'table'">Table</v-btn>
-              <v-btn color="warning" small @click="regionsReport.view = 'pie'">Pie</v-btn>
+              <v-btn color="warning" >Bar chart</v-btn>
+              <v-btn color="warning" >Table</v-btn>
+              <v-btn color="warning" >Pie</v-btn>
             </strong>
           </div>
-          <regions-report :view="regionsReport.view"></regions-report>
+<!--          <regions-report ></regions-report>-->
           <v-icon
             color="green"
             size="16"
@@ -321,8 +315,6 @@
 
 <script>
   import { mapState, mapActions, mapGetters } from 'vuex'
-  import AgesReport from "./components/reports/AgesReport";
-  import RegionsReport from "./components/reports/RegionsReport";
 
   export default {
     name: 'DashboardDashboard',
@@ -492,7 +484,6 @@
           'generalReport',
           'ageCategoryReport',
           'regionsReport',
-          'reportsloading'
       ]),
       ...mapState('filter', ['filter']),
       ...mapGetters('filter', ['filters_label']),
@@ -506,10 +497,6 @@
         this.list[index] = !this.list[index]
       }
     },
-    components: {
-        AgesReport,
-        RegionsReport
-    }
   }
 </script>
 

@@ -8,8 +8,8 @@
         no-gutters
       >
         <v-col
-          v-for="(link, i) in links"
-          :key="i"
+          v-for="(link, index) in links"
+          :key="index"
           class="text-center mb-sm-0 mb-5"
           cols="auto"
         >
@@ -29,7 +29,7 @@
           md="auto"
         >
           <div class="body-1 font-weight-light pt-6 pt-md-0 text-center">
-            &copy; 2019
+            &copy; 2020
           </div>
         </v-col>
       </v-row>
@@ -45,14 +45,14 @@
       links: [
         {
           href: 'https://github.com/IlyasAkbergen',
-          text: 'Author'
+          text: 'Автор'
         },
         {
           href: 'https://kupipolis.kz',
           text: 'Centras Insurance'
         },
         {
-            href: '#',
+            href: 'https://kommesk.kz/',
             text: 'Kommesk'
         }
       ]

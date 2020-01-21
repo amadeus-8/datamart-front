@@ -18,8 +18,7 @@
 
     <v-divider class="mb-1" />
 
-    <v-list dense
-            nav>
+    <v-list dense nav>
       <base-item-group :item="profile" />
     </v-list>
 
@@ -40,7 +39,6 @@
 </template>
 
 <script>
-  // Utilities
   import {
     mapState,
     mapActions
@@ -66,21 +64,21 @@
           title: 'dashboard',
           to: '/'
         },
-        {
-            group: '/charts',
-            icon: 'mdi-chart-timeline-variant',
-            title: 'charts',
-            children: [
-                {
-                    title: '',
-                    to: '#'
-                },
-                {
-                    title: '',
-                    to: '#'
-                }
-            ]
-        },
+        // {
+        //     group: '/charts',
+        //     icon: 'mdi-chart-timeline-variant',
+        //     title: 'charts',
+        //     children: [
+        //         {
+        //             title: '',
+        //             to: '#'
+        //         },
+        //         {
+        //             title: '',
+        //             to: '#'
+        //         }
+        //     ]
+        // },
         {
             group: '/tables',
             icon: 'mdi-grid',
@@ -102,19 +100,15 @@
     computed: {
       ...mapState('auth', ['user']),
 
-      computedItems () {
+      computedItems() {
         return this.items.map(this.mapItem)
       },
-      profile () {
+      profile() {
         return {
           avatar: false,
           group: '',
           title: this.user,
           children: [
-            {
-              to: '/pages/settings',
-              title: this.$t('settings')
-            },
             {
               click: this._logout,
               title: 'Выход'
@@ -132,19 +126,18 @@
 
     methods: {
       ...mapActions('auth', ['logout']),
-      mapItem (item) {
+      mapItem(item) {
         return {
           ...item,
           children: item.children ? item.children.map(this.mapItem) : undefined,
           title: this.$t(item.title)
         }
       },
-      _logout () {
-          this.logout()
-              .then((res) => {
-                  if (res) this.$router.push({ name: 'Login' })
-              })
-      }
+      _logout() {
+        this.logout().then((response) => {
+          if(response) this.$router.push({ name: 'Login' });
+        });
+      },
     }
   }
 </script>

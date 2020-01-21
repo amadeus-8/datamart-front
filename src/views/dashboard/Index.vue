@@ -11,8 +11,6 @@
 </template>
 
 <script>
-  import { mapState } from 'vuex'
-
   export default {
     name: 'DashboardIndex',
     beforeCreate () {
@@ -30,7 +28,7 @@
       expandOnHover: false
     }),
     computed: {
-      ...mapState('report', ['reportsloading'])
+      // ...mapState('report', ['reportsloading'])
     }
   }
 </script>

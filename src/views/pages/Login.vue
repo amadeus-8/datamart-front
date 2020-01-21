@@ -23,7 +23,7 @@
 
           <v-card-text class="text-center">
             <div class="text-center grey--text body-1 font-weight-light">
-              Some text
+              Войдите в систему
             </div>
             <ValidationProvider rules="required|email" v-slot="{ errors }">
               <v-text-field
@@ -89,29 +89,17 @@
     }),
 
     methods: {
-      ...mapActions('notify', ['notify']),
       ...mapActions('auth', ['login', 'getUser']),
       submit () {
-        // this.$validator.validateAll()
-        //   .then((result) => {
-        //     if (result) {
               this.login(this.form)
                 .then((res) => {
                   this.$router.push({ name: 'Dashboard' })
                   this.getUser()
                   return res
                 })
-                .catch(error => this.notify({
-                  text: `Возникла ошибка: ${error}`,
-                  color: 'danger'
-                }))
-          //   } else {
-          //     this.notify({
-          //       text: 'Неверно заполнены поля',
-          //       color: 'warning'
-          //     })
-          //   }
-          // })
+                .catch(error => {
+                  alert(error);
+                })
       }
     }
   }

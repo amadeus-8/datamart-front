@@ -158,53 +158,29 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-
 export default {
   name: 'FilterSet',
-  // props: {
-  //   filterSet: {
-  //     type: Object,
-  //     default: null
-  //   }
-  // },
-  data () {
-    return {
-      tabs: [
-        {
-          text: 'Страхователь',
-          value: 'client'
-        },
-        {
-          text: 'ТС',
-          value: 'vehicle'
-        },
-        {
-          text: 'Источник продаж',
-          value: 'seller'
-        }
-      ],
-      tab: 'client'
-    }
+
+  props: {
+    filter: Object,
   },
-  computed: {
-    ...mapState('filter', [
-      'filter'
-      // 'regions',
-      // 'age_categories',
-      // 'kbms',
-      // 'gifts',
-      // 'referrers',
-      // 'departments',
-      // 'sale_centers',
-      // 'sale_channels',
-      // 'vehicle_brands',
-      // 'vehicle_models',
-      // 'vehicle_year_categories'
-    ]),
-    isNew () {
-      return this.filter.filter_set.name !== 'default' && typeof this.filter.filter_set.id === 'undefined'
-    }
-  }
+
+  data: () => ({
+    tabs: [
+      {
+        text: 'Страхователь',
+        value: 'client'
+      },
+      {
+        text: 'ТС',
+        value: 'vehicle'
+      },
+      {
+        text: 'Источник продаж',
+        value: 'seller'
+      }
+    ],
+    tab: 'client'
+  }),
 }
 </script>

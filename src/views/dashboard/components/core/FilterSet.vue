@@ -1,18 +1,18 @@
 <template>
 <v-flex 12>
-    <v-flex xs12>
-        <div class="text-xs-center body-2 text-uppercase sidebar-filter">Город</div>
-        <v-select
-                :items="[{name: 'Все', id: null}].concat(filter.regions)"
-                label="регион"
-                item-text="name"
-                item-value="id"
-                v-model="filter.filter_set.region_id"
-                solo
-        ></v-select>
-    </v-flex>
+<!--    <v-flex xs12>-->
+<!--        <div class="text-xs-center body-2 text-uppercase sidebar-filter">Город</div>-->
+<!--        <v-select-->
+<!--                :items="[{name: 'Все', id: null}].concat(filter.regions)"-->
+<!--                label="регион"-->
+<!--                item-text="name"-->
+<!--                item-value="id"-->
+<!--                v-model="filter.filter_set.region_id"-->
+<!--                solo-->
+<!--        ></v-select>-->
+<!--    </v-flex>-->
 
-    <v-divider class="mt-2 mb-2"/>
+<!--    <v-divider class="mt-2 mb-2"/>-->
 
     <div class="text-xs-center mb-3">Дополнительные фильтры</div>
 

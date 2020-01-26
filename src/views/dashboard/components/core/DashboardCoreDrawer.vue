@@ -2,7 +2,6 @@
   <v-navigation-drawer id="core-navigation-drawer"
                        v-model="drawer"
                        :dark="barColor !== 'rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.7)'"
-                       :expand-on-hover="expandOnHover"
                        mobile-break-point="960"
                        app
                        width="260"
@@ -23,6 +22,51 @@
     </v-list>
 
     <v-divider class="mb-2" />
+
+    <v-list class="pl-3 pr-3 pt-0 pb-0">
+      <v-menu :close-on-content-click="false"
+              :nudge-right="40"
+              transition="scale-transition"
+              offset-y
+              min-width="290px">
+        <template v-slot:activator="{ on }">
+          <v-text-field
+            label="Дата начала"
+            prepend-icon="mdi-calendar"
+            readonly
+            v-on="on"></v-text-field>
+        </template>
+        <v-date-picker locale="ru-ru"></v-date-picker>
+      </v-menu>
+
+      <v-menu
+        :close-on-content-click="false"
+        :nudge-right="40"
+        transition="scale-transition"
+        offset-y
+        min-width="290px">
+        <template v-slot:activator="{ on }">
+          <v-text-field
+            label="Дата окончания"
+            prepend-icon="mdi-calendar"
+            readonly
+            v-on="on"></v-text-field>
+        </template>
+        <v-date-picker locale="ru-ru"></v-date-picker>
+      </v-menu>
+    </v-list>
+
+    <v-list class="pl-3 pr-3 pt-0 pb-0">
+      <v-flex xs12>
+        <v-select
+          label="Регион"
+          item-text="name"
+          item-value="id"
+          solo
+        ></v-select>
+      </v-flex>
+    </v-list>
+
 
     <v-list expand nav>
       <template v-for="(item, i) in computedItems">
@@ -47,13 +91,6 @@
   export default {
     name: 'DashboardCoreDrawer',
 
-    props: {
-      expandOnHover: {
-        type: Boolean,
-        default: false
-      }
-    },
-
     data: () => ({
       drawer: true,
       barColor: 'rgba(0, 0, 0, .8), rgba(0, 0, 0, .8)',
@@ -63,37 +100,7 @@
           icon: 'mdi-view-dashboard',
           title: 'dashboard',
           to: '/'
-        },
-        // {
-        //     group: '/charts',
-        //     icon: 'mdi-chart-timeline-variant',
-        //     title: 'charts',
-        //     children: [
-        //         {
-        //             title: '',
-        //             to: '#'
-        //         },
-        //         {
-        //             title: '',
-        //             to: '#'
-        //         }
-        //     ]
-        // },
-        {
-            group: '/tables',
-            icon: 'mdi-grid',
-            title: 'tables',
-            children: [
-                {
-                    title: 'summary',
-                    to: 'summary-tables'
-                },
-                {
-                    title: 'comparative',
-                    to: 'comparative-tables'
-                },
-            ]
-        },
+        }
       ]
     }),
 
@@ -115,12 +122,6 @@
             }
           ]
         }
-      }
-    },
-
-    watch: {
-      '$vuetify.breakpoint.smAndDown' (val) {
-        this.$emit('update:expandOnHover', !val)
       }
     },
 

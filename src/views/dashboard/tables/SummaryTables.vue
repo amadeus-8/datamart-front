@@ -2,6 +2,8 @@
   <v-container id="extended-tables"
                fluid
                tag="section">
+    <dashboard-core-app-bar></dashboard-core-app-bar>
+    <dashboard-core-filter></dashboard-core-filter>
     <div class="mt-3 text-xs-center body-2 text-uppercase">
     <v-btn color="secondary"
            medium
@@ -207,6 +209,10 @@
 
     <div class="py-3" />
 
+    <dashboard-core-footer></dashboard-core-footer>
+
+
+
   </v-container>
 
 
@@ -222,6 +228,12 @@
       // components: {
       //   FilterSet
       // },
+
+      components: {
+        DashboardCoreAppBar: () => import('../components/core/DashboardCoreAppBar'),
+        DashboardCoreFooter: () => import('../components/core/DashboardCoreFooter'),
+        DashboardCoreFilter: () => import('../components/core/DashboardCoreFilter')
+      },
 
       data: () => ({
 

@@ -1,17 +1,22 @@
 <template>
   <v-content>
-    <router-view />
-
-    <dashboard-core-footer />
+    <dashboard-core-drawer></dashboard-core-drawer>
+    <summary-tables></summary-tables>
   </v-content>
 </template>
 
 <script>
+
   export default {
     name: 'DashboardCoreView',
 
     components: {
-      DashboardCoreFooter: () => import('./DashboardCoreFooter')
-    }
+      DashboardCoreDrawer: () => import('./DashboardCoreDrawer'),
+      SummaryTables: () =>  import('../../tables/SummaryTables'),
+    },
+
+    data: () => ({
+
+    }),
   }
 </script>

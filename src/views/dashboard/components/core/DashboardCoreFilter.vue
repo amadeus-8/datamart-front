@@ -24,41 +24,41 @@
       <v-card class="text-center mb-0"
               width="600">
         <v-card-text>
-          <strong class="d-inline-block">ФИЛЬТРЫ</strong>
+<!--          <strong class="d-inline-block">ФИЛЬТРЫ</strong>-->
 
-          <v-menu v-model="from_menu"
-                  :close-on-content-click="false"
-                  :nudge-right="40"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="290px">
-            <template v-slot:activator="{ on }">
-              <v-text-field v-model="filter.filter_set.from"
-                            label="From date"
-                            prepend-icon="mdi-calendar"
-                            readonly
-                            v-on="on"></v-text-field>
-            </template>
-            <v-date-picker v-model="filter.filter_set.from" @input="from_menu = false"></v-date-picker>
-          </v-menu>
+<!--          <v-menu v-model="from_menu"-->
+<!--                  :close-on-content-click="false"-->
+<!--                  :nudge-right="40"-->
+<!--                  transition="scale-transition"-->
+<!--                  offset-y-->
+<!--                  min-width="290px">-->
+<!--            <template v-slot:activator="{ on }">-->
+<!--              <v-text-field v-model="filter.filter_set.from"-->
+<!--                            label="From date"-->
+<!--                            prepend-icon="mdi-calendar"-->
+<!--                            readonly-->
+<!--                            v-on="on"></v-text-field>-->
+<!--            </template>-->
+<!--            <v-date-picker v-model="filter.filter_set.from" @input="from_menu = false"></v-date-picker>-->
+<!--          </v-menu>-->
 
-          <v-menu v-model="to_menu"
-                  :close-on-content-click="false"
-                  :nudge-right="40"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="290px">
-            <template v-slot:activator="{ on }">
-              <v-text-field v-model="filter.filter_set.to"
-                            label="To date"
-                            prepend-icon="mdi-calendar"
-                            readonly
-                            v-on="on"></v-text-field>
-            </template>
-            <v-date-picker v-model="filter.filter_set.to" @input="to_menu = false"></v-date-picker>
-          </v-menu>
+<!--          <v-menu v-model="to_menu"-->
+<!--                  :close-on-content-click="false"-->
+<!--                  :nudge-right="40"-->
+<!--                  transition="scale-transition"-->
+<!--                  offset-y-->
+<!--                  min-width="290px">-->
+<!--            <template v-slot:activator="{ on }">-->
+<!--              <v-text-field v-model="filter.filter_set.to"-->
+<!--                            label="To date"-->
+<!--                            prepend-icon="mdi-calendar"-->
+<!--                            readonly-->
+<!--                            v-on="on"></v-text-field>-->
+<!--            </template>-->
+<!--            <v-date-picker v-model="filter.filter_set.to" @input="to_menu = false"></v-date-picker>-->
+<!--          </v-menu>-->
 
-          <v-divider class="mb-3"/>
+<!--          <v-divider class="mb-3"/>-->
 
           <filter-set :filter="filter"></filter-set>
 

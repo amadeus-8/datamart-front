@@ -1,6 +1,6 @@
 <template>
   <v-content>
-    <dashboard-core-drawer></dashboard-core-drawer>
+    <dashboard-core-drawer :filters="filters"></dashboard-core-drawer>
     <summary-tables></summary-tables>
   </v-content>
 </template>
@@ -16,7 +16,10 @@
     },
 
     data: () => ({
-
+      filters: {
+        from_date: new Date('2019-01-01').toISOString().substr(0, 10),
+        to_date: new Date('2019-01-30').toISOString().substr(0, 10),
+      },
     }),
   }
 </script>

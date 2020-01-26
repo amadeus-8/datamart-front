@@ -24,35 +24,40 @@
     <v-divider class="mb-2" />
 
     <v-list class="pl-3 pr-3 pt-0 pb-0">
-      <v-menu :close-on-content-click="false"
+      <v-menu v-model="from_menu"
+              :close-on-content-click="false"
               :nudge-right="40"
               transition="scale-transition"
               offset-y
               min-width="290px">
         <template v-slot:activator="{ on }">
-          <v-text-field
-            label="Дата начала"
-            prepend-icon="mdi-calendar"
-            readonly
-            v-on="on"></v-text-field>
+          <v-text-field v-model="filters.from_date"
+                        label="Дата начала"
+                        prepend-icon="mdi-calendar"
+                        readonly
+                        v-on="on"></v-text-field>
         </template>
-        <v-date-picker locale="ru-ru"></v-date-picker>
+        <v-date-picker v-model="filters.from_date"
+                       @input="from_menu = false"
+                       locale="ru-ru"></v-date-picker>
       </v-menu>
 
-      <v-menu
-        :close-on-content-click="false"
-        :nudge-right="40"
-        transition="scale-transition"
-        offset-y
-        min-width="290px">
+      <v-menu v-model="to_menu"
+              :close-on-content-click="false"
+              :nudge-right="40"
+              transition="scale-transition"
+              offset-y
+              min-width="290px">
         <template v-slot:activator="{ on }">
-          <v-text-field
-            label="Дата окончания"
-            prepend-icon="mdi-calendar"
-            readonly
-            v-on="on"></v-text-field>
+          <v-text-field v-model="filters.to_date"
+                        label="Дата окончания"
+                        prepend-icon="mdi-calendar"
+                        readonly
+                        v-on="on"></v-text-field>
         </template>
-        <v-date-picker locale="ru-ru"></v-date-picker>
+        <v-date-picker v-model="filters.to_date"
+                       locale="ru-ru"
+                       @input="to_menu = false"></v-date-picker>
       </v-menu>
     </v-list>
 
@@ -91,7 +96,13 @@
   export default {
     name: 'DashboardCoreDrawer',
 
+    props: {
+      filters: Object,
+    },
+
     data: () => ({
+      from_menu: false,
+      to_menu: false,
       drawer: true,
       barColor: 'rgba(0, 0, 0, .8), rgba(0, 0, 0, .8)',
 

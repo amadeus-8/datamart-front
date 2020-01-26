@@ -85,8 +85,8 @@ export default {
   },
   data: () => ({
     menu: false,
-    from_menu: false,
-    to_menu: false,
+    // from_menu: false,
+    // to_menu: false,
 
     filter: {
       value_view: 'sums',

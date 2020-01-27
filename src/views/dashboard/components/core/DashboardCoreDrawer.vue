@@ -1,6 +1,5 @@
 <template>
   <v-navigation-drawer id="core-navigation-drawer"
-                       v-model="drawer"
                        :dark="barColor !== 'rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.7)'"
                        mobile-break-point="960"
                        app
@@ -24,6 +23,20 @@
     <v-divider class="mb-2" />
 
     <v-list class="pl-3 pr-3 pt-0 pb-0">
+      <v-flex xs12>
+        <div class="text-xs-center mt-2 pl-2 pb-2 body-2 text-uppercase sidebar-filter">Регионы</div>
+        <v-select :items="[{name: 'Все', id: null}].concat(regions)"
+                  label="Регион"
+                  item-text="name"
+                  item-value="id"
+                  solo
+                  v-model="filters.region_id"
+        ></v-select>
+      </v-flex>
+    </v-list>
+
+    <v-list class="pl-3 pr-3 pt-0 pb-0">
+      <div class="text-xs-center pl-2 pb-2 body-2 text-uppercase sidebar-filter">Период</div>
       <v-menu v-model="from_menu"
               :close-on-content-click="false"
               :nudge-right="40"
@@ -61,18 +74,6 @@
       </v-menu>
     </v-list>
 
-    <v-list class="pl-3 pr-3 pt-0 pb-0">
-      <v-flex xs12>
-        <v-select
-          label="Регион"
-          item-text="name"
-          item-value="id"
-          solo
-        ></v-select>
-      </v-flex>
-    </v-list>
-
-
     <v-list expand nav>
       <template v-for="(item, i) in computedItems">
         <base-item-group v-if="item.children"
@@ -88,10 +89,11 @@
 </template>
 
 <script>
+  import {axiosInstance as axios} from "../../../../plugins/axios";
   import {
     mapState,
     mapActions
-  } from 'vuex'
+  } from 'vuex';
 
   export default {
     name: 'DashboardCoreDrawer',
@@ -112,8 +114,15 @@
           title: 'dashboard',
           to: '/'
         }
-      ]
+      ],
+
+      regions: [],
+
     }),
+
+    beforeMount() {
+      this.getRegions();
+    },
 
     computed: {
       ...mapState('auth', ['user']),
@@ -149,6 +158,15 @@
         this.logout().then((response) => {
           if(response) this.$router.push({ name: 'Login' });
         });
+      },
+
+      getRegions() {
+        axios.get('/get_regions').then((response) => {
+          this.setRegions(response.data);
+        });
+      },
+      setRegions(response) {
+        this.regions = response;
       },
     }
   }

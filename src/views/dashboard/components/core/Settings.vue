@@ -245,7 +245,7 @@
 
     mounted () {
         this.getFilterSets()
-        this.getRegions()
+        // this.getRegions()
     },
 
     methods: {

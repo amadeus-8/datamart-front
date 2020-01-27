@@ -200,38 +200,34 @@ export default {
       })
     },
     setVehicleYearCategories(response) {
-      this.filter.vehicle_year_categories = response;
+      this.vehicle_year_categories = response;
     },
     setVehicleBrands(response) {
-      this.filter.vehicle_brands = response;
+      this.vehicle_brands = response;
     },
     setVehicleModels(response) {
-      this.filter.vehicle_models = response;
+      this.vehicle_models = response;
     },
 
     getSellerFilters() {
       axios.get('/get_seller_filters').then((response) => {
-        this.setAgents(response.data.agents);
         this.setReferrers(response.data.referrers);
         this.setDepartments(response.data.departments);
         this.setSaleChannels(response.data.sale_channels);
         this.setSaleCenters(response.data.sale_centers);
       });
     },
-    setAgents(response) {
-      this.filter.agents = response;
-    },
     setReferrers(response) {
-      this.filter.referrers = response;
+      this.referrers = response;
     },
     setDepartments(response) {
-      this.filter.departments = response;
+      this.departments = response;
     },
     setSaleChannels(response) {
-      this.filter.sale_channels = response;
+      this.sale_channels = response;
     },
     setSaleCenters(response) {
-      this.filter.sale_centers = response;
+      this.sale_centers = response;
     },
   },
 

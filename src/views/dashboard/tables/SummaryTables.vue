@@ -92,42 +92,65 @@
 <!--      &lt;!&ndash;      </v-data-table>&ndash;&gt;-->
 <!--    </base-material-card>-->
 
-<!--    <base-material-card color="success"-->
-<!--                        icon="mdi-clipboard-text"-->
-<!--                        inline-->
-<!--                        title="Отчет по регионам"-->
-<!--                        class="px-5 py-3 mb-5">-->
-<!--      <v-simple-table>-->
-<!--        <template v-slot:default>-->
-<!--          <thead>-->
-<!--          <tr>-->
-<!--            <th class="text-left">{{ summary_region_table_result.property }}</th>-->
-<!--            <th v-for="(item, key) in summary_region_table_result.labels">{{ item }}</th>-->
-<!--          </tr>-->
-<!--          </thead>-->
-<!--          <tbody>-->
-<!--          <tr v-for="(item, key) in summary_region_table_result.data" >-->
-<!--            <td>{{ key }}</td>-->
-<!--            <td v-for="(items, keys) in item.sums" >{{ items }}</td>-->
-<!--            &lt;!&ndash;td>{{ summary_region_table_result.sums[key] }}</td>-->
-<!--            <td>{{ summary_region_table_result.avgs[key] }}</td>-->
-<!--            <td>{{ summary_region_table_result.payout_sums[key] }}</td>-->
-<!--            <td>{{ summary_region_table_result.payout_counts[key] }}</td>-->
-<!--            <td>{{ summary_region_table_result.cross_cums[key] }}</td&ndash;&gt;-->
-<!--            &lt;!&ndash;td>{{ item }}</td>-->
-<!--            <td>{{item.ogpo_vts_result}}</td>-->
-<!--            <td>{{ item.vts_cross_result }}</td>-->
-<!--            <td>{{item.vts_overall_sum}}</td>-->
-<!--            <td>{{item.avg_sum}}</td>-->
-<!--            <td>{{item.avg_cross_result}}</td>-->
-<!--            <td>{{item.overall_lost_count}}</td>-->
-<!--            <            <td>{{item.}}</td>&ndash;&gt;-->
-<!--            &lt;!&ndash;td>1</td&ndash;&gt;-->
-<!--          </tr>-->
-<!--          </tbody>-->
-<!--        </template>-->
-<!--      </v-simple-table>-->
-<!--    </base-material-card>-->
+    <base-material-card color="success"
+                        icon="mdi-clipboard-text"
+                        inline
+                        title="Отчет по регионам"
+                        class="px-5 py-3 mb-5"
+                        v-show="values.view == 'pivot' || values.view == null"
+                        v-if="Object.keys(pivot_table_result).length>0">
+      <v-simple-table>
+        <template v-slot:default>
+          <thead>
+          <tr>
+            <th class="text-left">{{ pivot_table_result.property }}</th>
+            <th v-for="(item) in pivot_table_result.labels">{{ item }}</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="(item, key) in pivot_table_result.data">
+            <td>{{ key }}</td>
+            <td v-for="items in item.sum" v-if="values.type == 'sums' || values.type == null">{{ items }}</td>
+            <td v-for="items in item.count" v-if="values.type == 'counts'">{{ items }}</td>
+            <td v-for="items in item.avg" v-if="values.type == 'avgs'">{{ items }}</td>
+          </tr>
+          </tbody>
+        </template>
+      </v-simple-table>
+    </base-material-card>
+
+    <base-material-card color="success"
+                        icon="mdi-clipboard-text"
+                        inline
+                        title="Отчет по регионам"
+                        class="px-5 py-3 mb-5"
+                        v-show="values.view == 'comparative'"
+                        v-if="Object.keys(comparative_table_result).length>0">
+      <v-simple-table>
+        <template v-slot:default>
+          <thead>
+          <tr>
+            <th class="text-left">{{ comparative_table_result.property }}</th>
+            <th v-for="(item) in comparative_table_result.labels">{{ item }}</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="(item, key) in comparative_table_result.data">
+            <td>{{ key }}</td>
+            <td v-for="items in item.sum" v-if="values.type == 'sums' || values.type == null">{{ items }}</td>
+            <td v-for="items in item.count" v-if="values.type == 'counts'">{{ items }}</td>
+            <td v-for="items in item.avg" v-if="values.type == 'avgs'">{{ items }}</td>
+            <td>1.5%</td>
+            <td v-for="items in item.sumsprev" v-if="values.type == 'sums' || values.type == null">{{ items }}</td>
+            <td v-for="items in item.countprev" v-if="values.type == 'counts'">{{ items }}</td>
+            <td v-for="items in item.avgprev" v-if="values.type == 'avgs'">{{ items }}</td>
+            <td>3.5%</td>
+            <td>114%</td>
+          </tr>
+          </tbody>
+        </template>
+      </v-simple-table>
+    </base-material-card>
 
 <!--    <base-material-card color="success"-->
 <!--                        icon="mdi-clipboard-text"-->

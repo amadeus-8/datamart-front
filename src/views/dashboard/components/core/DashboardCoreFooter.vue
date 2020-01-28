@@ -1,5 +1,5 @@
 <template>
-  <v-footer
+  <v-footer absolute
     id="dashboard-core-footer"
   >
     <v-container>

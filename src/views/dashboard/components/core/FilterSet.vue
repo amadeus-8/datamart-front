@@ -77,12 +77,14 @@
                   label="Модель"
                   item-text="name"
                   item-value="id"
+                  item-brand-id="vehicle_brand_id"
                   solo
-                  v-model="filters.vehicle_model"></v-select>
+                  v-model="filters.vehicle_model"
+        ></v-select>
       </v-tab-item>
 
       <v-tab-item :key="2" value="seller">
-        <div class="text-xs-center mt-2 body-2 text-uppercase sidebar-filter">Канал продаж</div>
+        <div class="text-xs-center mt-2 body-2 text-uppercase sidebar-filter">Центр продаж</div>
         <v-select :items="[{name: 'Все', id: null}].concat(sale_channels)"
                   label="Канал продаж"
                   item-text="name"
@@ -90,7 +92,7 @@
                   solo
                   v-model="filters.sale_channel"></v-select>
 
-        <div class="text-xs-center mt-2 body-2 text-uppercase sidebar-filter">Центр продаж</div>
+        <div class="text-xs-center mt-2 body-2 text-uppercase sidebar-filter">Канал продаж</div>
         <v-select :items="[{name: 'Все', id: null}].concat(sale_centers)"
                   label="Центра продаж"
                   item-text="name"
@@ -98,7 +100,7 @@
                   solo
                   v-model="filters.sale_center"></v-select>
 
-        <div class="text-xs-center mt-2 body-2 text-uppercase sidebar-filter">Департамент</div>
+        <div class="text-xs-center mt-2 body-2 text-uppercase sidebar-filter">Подразделение</div>
         <v-select :items="[{name: 'Все', id: null}].concat(departments)"
                   label="Департамент"
                   item-text="name"

@@ -3,17 +3,17 @@
     id="pages"
     :class="$vuetify.theme.dark ? undefined : 'grey lighten-3'"
   >
-    <v-img
-      :class="{
-        'v-image--sm': this.$vuetify.breakpoint.smAndDown,
-        'v-image--md': this.$vuetify.breakpoint.mdAndDown
-      }"
-      :src="require(`@/assets/${src || 'clint-mckoy.jpg'}`)"
-      gradient="to top, rgba(0, 0, 0, .5), rgba(0, 0, 0, .5)"
-      min-height="100%"
-    >
+<!--    <v-img-->
+<!--      :class="{-->
+<!--        'v-image&#45;&#45;sm': this.$vuetify.breakpoint.smAndDown,-->
+<!--        'v-image&#45;&#45;md': this.$vuetify.breakpoint.mdAndDown-->
+<!--      }"-->
+<!--      :src="require(`@/assets/${src || 'clint-mckoy.jpg'}`)"-->
+<!--      gradient="to top, rgba(0, 0, 0, .5), rgba(0, 0, 0, .5)"-->
+<!--      min-height="100%"-->
+<!--    >-->
       <router-view />
-    </v-img>
+<!--    </v-img>-->
   </v-content>
 </template>
 

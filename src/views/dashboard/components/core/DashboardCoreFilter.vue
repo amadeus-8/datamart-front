@@ -7,7 +7,7 @@
             flat
             link
             min-width="100"
-            style="position: fixed; top: 50px; right: -35px; border-radius: 8px;">
+            style="position: fixed; top: 170px; right: -35px; border-radius: 8px;">
       <v-icon large>mdi-filter</v-icon>
     </v-card>
 
@@ -24,7 +24,7 @@
       <v-card class="text-center mb-0"
               width="600">
         <v-card-text>
-          <filter-set :filters="filters"></filter-set>
+          <filter-set :filters="filters" :values="values"></filter-set>
 
           <div class="mt-3 text-xs-center body-2 text-uppercase">
             <v-btn color="secondary"
@@ -49,6 +49,7 @@ export default {
 
   props: {
     filters: Object,
+    values: Object,
     sendFilters: Function,
   },
 

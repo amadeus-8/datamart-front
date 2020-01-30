@@ -1,23 +1,34 @@
 <template>
-  <v-flex 12>
+  <v-flex 12 class="overflow-visible">
     <v-flex xs12>
-      <div class="text-xs-center body-2 text-uppercase sidebar-filter">Фильтр 1</div>
+      <div class="text-xs-center body-2 text-uppercase sidebar-filter">Строка</div>
       <v-select :items="[{text: 'Не выбрано', value: null}].concat(filter_options)"
-                label="Фильтры"
+                label="Строки"
                 item-text="text"
                 item-value="value"
                 solo
-                v-model="filters.filter_1"></v-select>
+                v-model="filters.columns"></v-select>
+    </v-flex>
+
+    <v-flex xs12 v-if="values.view == 'pivot' || values.view == null">
+      <div class="text-xs-center body-2 text-uppercase sidebar-filter">Столбец</div>
+      <v-select :items="[{text: 'Не выбрано', value: null}].concat(filter_options)"
+                label="Столбцы"
+                :disabled="values.view == 'comparative'"
+                item-text="text"
+                item-value="value"
+                solo
+                v-model="filters.rows"></v-select>
     </v-flex>
 
     <v-flex xs12>
-      <div class="text-xs-center body-2 text-uppercase sidebar-filter">Фильтр 2</div>
-      <v-select :items="[{text: 'Не выбрано', value: null}].concat(filter_options)"
-                label="Фильтры"
+      <div class="text-xs-center body-2 text-uppercase sidebar-filter">Значения</div>
+      <v-select :items="[{text: 'Не выбрано', value: null}].concat(filter_values)"
+                label="Значения"
                 item-text="text"
                 item-value="value"
                 solo
-                v-model="filters.filter_2"></v-select>
+                v-model="filters.values"></v-select>
     </v-flex>
 
     <v-divider class="mt-2 mb-2"/>
@@ -128,6 +139,7 @@ export default {
 
   props: {
     filters: Object,
+    values: Object,
   },
 
   data: () => ({
@@ -163,17 +175,88 @@ export default {
         value: "referrer"
       },
       {
-        text: "Агент",
-        value: "agent"
-      },
-      {
         text: "Департамент",
         value: "department"
       },
+    ],
+
+    filter_values: [
       {
-        text: "Подарки",
-        value: "gift"
-      }
+        text: 'ГПО ВТС',
+        value: 'ogpo_vts_count',
+      },
+      {
+        text: 'Медицина (Все из узла ДМС)',
+        value: 'medical_count',
+      },
+      {
+        text: 'Мегаполис (Мегаполис, Мегаполис 100,  Страхование имущества)',
+        value: 'megapolis_count',
+      },
+      {
+        text: 'Амортизация',
+        value: 'amortization_count',
+      },
+      {
+        text: 'Каско (Автокаско, Классик, Прогресс)',
+        value: 'kasko_count',
+      },
+      {
+        text: 'Коммеск-Комфорт',
+        value: 'kommesk_comfort_count',
+      },
+      {
+        text: 'ВЗР (все из узла страхование путеш-в)',
+        value: 'tour_count',
+      },
+      {
+        text: 'Премия ОС ГПО ВТС',
+        value: 'ogpo_vts_result',
+      },
+      {
+        text: 'Премии др.продукты (Кросс + доброволки)',
+        value: 'vts_cross_result',
+      },
+      {
+        text: 'Сумма премий ВТС',
+        value: 'vts_overall_sum',
+      },
+      {
+        text: 'Ср. чек общий (ГПО ВТС, кросс, доброволки)',
+        value: 'avg_sum',
+      },
+      {
+        text: 'Ср.чек кросс и доброволки',
+        value: 'avg_cross_result',
+      },
+      {
+        text: 'Кол-во Убытков общее',
+        value: 'overall_lost_count',
+      },
+      {
+        text: 'Кол-во Убытков по ОС ГПО ВТС',
+        value: 'vts_lost_count',
+      },
+      {
+        text: 'Заявленные Претензии(статус - Оформление)',
+        value: 'declared_claims',
+      },
+      {
+        text: 'Рассмотрение (Статусы - рассм-ся, на подписи)',
+        value: 'pending_claims',
+      },
+      {
+        text: 'Статусы - Подписан, Урегулировано',
+        value: 'accepted_claims',
+      },
+      {
+        text: 'Статус - Отказ в возмещении',
+        value: 'payout_reject_claims',
+      },
+      {
+        text: 'Статус - Отказ заявителя',
+        value: 'client_reject_claims',
+      },
     ],
 
     tabs: [

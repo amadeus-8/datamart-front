@@ -55,8 +55,7 @@
           title="Отчет по возрастным категориям"
         >
           <div class="ml-0 text-right">
-            <strong
-              class="h5 font-weight-light">
+            <strong class="h5 font-weight-light">
               <v-btn color="warning" small >Bar chart</v-btn>
               <v-btn color="warning" small >Table</v-btn>
               <v-btn color="warning" small >Pie</v-btn>
@@ -80,7 +79,7 @@
           icon="mdi-earth"
           title="Отчет по регионам"
         >
-          <div class="ml-0 text-right">
+          <div class="ml-0 text-right mt-0">
             <strong
               class="h5 font-weight-light">
               <v-btn color="warning" >Bar chart</v-btn>

@@ -93,8 +93,8 @@
                         title="Отчет по регионам"
                         class="px-5 py-3 mb-5"
                         v-show="values.view == 'comparative'"
-                        v-if="Object.keys(comparative_table_result).length>0">
-      <v-simple-table>
+                        v-if="Object.keys(comparative_table_result).length > 0">
+      <v-simple-table id="comparativeTable">
         <template v-slot:default>
           <thead>
           <tr>
@@ -105,19 +105,54 @@
           <tbody>
           <tr v-for="(item, key) in comparative_table_result.data">
             <td>{{ key }}</td>
-            <td v-for="items in item.sum" v-if="values.type == 'sums' || values.type == null">{{ items }}</td>
-            <td v-for="items in item.count" v-if="values.type == 'counts'">{{ items }}</td>
-            <td v-for="items in item.avg" v-if="values.type == 'avgs'">{{ items }}</td>
-            <td>1.5%</td>
-            <td v-for="items in item.sumsprev" v-if="values.type == 'sums' || values.type == null">{{ items }}</td>
-            <td v-for="items in item.countprev" v-if="values.type == 'counts'">{{ items }}</td>
-            <td v-for="items in item.avgprev" v-if="values.type == 'avgs'">{{ items }}</td>
-            <td>3.5%</td>
-            <td>114%</td>
+            <td v-for="(item, index) in item[0]" v-if="index == filters.values">
+              <span v-if="item == null">0</span>
+              <span v-else>{{ item.toLocaleString() }}</span>
+            </td>
+            <td v-for="(item, index) in item[1]" v-if="index == filters.values">
+              {{ item }}%
+            </td>
+            <td v-for="(item, index) in item[2]" v-if="index == filters.values">
+              <span v-if="item == null">0</span>
+              <span v-else>{{ item.toLocaleString() }}</span>
+            </td>
+            <td v-for="(item, index) in item[3]" v-if="index == filters.values">
+              {{ item }}%
+            </td>
+            <td v-for="(item, index) in item[4]" v-if="index == filters.values">
+              {{ item }}%
+            </td>
+          </tr>
+          <tr>
+            <td>Общий итог</td>
+            <td v-for="(item,key) in comparative_table_result.bottomData[0]" v-if="key == filters.values">
+              <span v-if="item == null">0</span>
+              <span v-else>{{ item.toLocaleString() }}</span>
+            </td>
+            <td>
+              100%
+            </td>
+            <td v-for="(item,key) in comparative_table_result.bottomData[1]" v-if="key == filters.values">
+              <span v-if="item == null">0</span>
+              <span v-else>{{ item.toLocaleString() }}</span>
+            </td>
+            <td >
+              100%
+            </td>
+            <td v-for="(item,key) in comparative_table_result.bottomData[2]" v-if="key == filters.values">
+              <span v-if="item == null">0</span>
+              <span v-else>{{ item.toLocaleString() }}%</span>
+            </td>
           </tr>
           </tbody>
         </template>
       </v-simple-table>
+      <div class="d-flex justify-end mt-2">
+        <v-btn tile small color="success" @click="exportTableToExcel('comparativeTable')">
+          <v-icon small color="white" class="mr-1">mdi-arrow-down-bold-box-outline</v-icon>
+          <span>Скачать</span>
+        </v-btn>
+      </div>
     </base-material-card>
 
     <div class="py-3" />

@@ -23,7 +23,7 @@
 
     <v-flex xs12>
       <div class="text-xs-center body-2 text-uppercase sidebar-filter">Значения</div>
-      <v-select :items="[{text: 'Не выбрано', value: null}].concat(filter_values)"
+      <v-select :items="filter_values"
                 label="Значения"
                 item-text="text"
                 item-value="value"
@@ -63,6 +63,11 @@
                     label="Кбм"
                     v-model="filters.insurance_class">
           </v-select>
+
+          <v-select :items="client_status"
+                    label="Статус клиента"
+                    v-model="filters.status_id">
+          </v-select>
         </v-card>
       </v-tab-item>
 
@@ -101,7 +106,7 @@
                   item-text="name"
                   item-value="id"
                   solo
-                  v-model="filters.sale_channel"></v-select>
+                  v-model="filters.sale_channel_id"></v-select>
 
         <div class="text-xs-center mt-2 body-2 text-uppercase sidebar-filter">Канал продаж</div>
         <v-select :items="[{name: 'Все', id: null}].concat(sale_centers)"
@@ -109,7 +114,7 @@
                   item-text="name"
                   item-value="id"
                   solo
-                  v-model="filters.sale_center"></v-select>
+                  v-model="filters.sale_center_id"></v-select>
 
         <div class="text-xs-center mt-2 body-2 text-uppercase sidebar-filter">Подразделение</div>
         <v-select :items="[{name: 'Все', id: null}].concat(departments)"
@@ -117,7 +122,7 @@
                   item-text="name"
                   item-value="id"
                   solo
-                  v-model="filters.department"></v-select>
+                  v-model="filters.department_id"></v-select>
 
         <div class="text-xs-center mt-2 body-2 text-uppercase sidebar-filter">Канал привлечения</div>
         <v-select :items="[{name: 'Все', id: null}].concat(referrers)"
@@ -125,7 +130,7 @@
                   item-text="name"
                   item-value="id"
                   solo
-                  v-model="filters.referrer"></v-select>
+                  v-model="filters.referrer_id"></v-select>
       </v-tab-item>
     </v-tabs-items>
   </v-flex>
@@ -145,6 +150,7 @@ export default {
   data: () => ({
     kbms: ['все', 'М', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', 'ИП'],
     age_categories: ['все', 'младше 20', '20-25', '26-34', '35-44', '45-54', '55-64', 'старше 64'],
+    client_status: [],
     vehicle_year_categories: [],
     referrers: [],
     departments: [],

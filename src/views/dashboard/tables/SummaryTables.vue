@@ -59,18 +59,21 @@
       <v-simple-table id="pivotTable">
         <template v-slot:default>
           <thead>
-          <tr>
-            <th class="text-left">{{ pivot_table_result.property }}</th>
-            <th v-for="(item) in pivot_table_result.labels">{{ item }}</th>
-          </tr>
+            <tr>
+              <th class="text-left">{{ pivot_table_result.property }}</th>
+              <th v-for="(item) in pivot_table_result.labels">{{ item }}</th>
+            </tr>
           </thead>
           <tbody>
-          <tr v-for="(item, key) in pivot_table_result.data">
-            <td>{{ key }}</td>
-            <td v-for="items in item" >{{ items }}</td>
-            <!--td v-for="items in item.ogpo_vts_result" >{{ items }}</td>
-            <td v-for="items in item.vts_cross_result" >{{ items }}</td-->
-          </tr>
+            <tr v-for="(item, key) in pivot_table_result.data">
+              <td>{{ key }}</td>
+              <td v-for="items, in item" >
+                <span v-for="(i, k) in items" v-if="k == filters.values">
+                  <span v-if="i == null"> 0 </span>
+                  <span v-else>{{ i.toLocaleString() }}</span>
+                </span>
+              </td>
+            </tr>
           </tbody>
         </template>
       </v-simple-table>

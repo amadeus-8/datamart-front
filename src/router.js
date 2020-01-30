@@ -29,7 +29,7 @@ export default new Router({
       ]
     },
     {
-      path: '/',
+      path: '',
       meta: {
         requiresAuth: true
       },
@@ -38,7 +38,7 @@ export default new Router({
         // Dashboard
         {
           name: 'Dashboard',
-          path: '',
+          path: '/',
           component: () => import('@/views/dashboard/Dashboard')
         },
         // Tables

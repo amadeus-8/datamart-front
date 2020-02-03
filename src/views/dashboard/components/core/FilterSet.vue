@@ -54,8 +54,10 @@
             <v-radio label="Все"></v-radio>
           </v-radio-group>
 
-          <v-select :items="age_categories"
-                    label="Возраст"
+          <v-select :items="[{name: 'Все', id: null}].concat(age_categories)"
+                    label="Категория возраста"
+                    item-text="name"
+                    item-value="id"
                     v-model="filters.age_category">
           </v-select>
 
@@ -64,8 +66,10 @@
                     v-model="filters.insurance_class">
           </v-select>
 
-          <v-select :items="client_status"
+          <v-select :items="[{name: 'Все', id: null}].concat(clients_status)"
                     label="Статус клиента"
+                    item-text="name"
+                    item-value="id"
                     v-model="filters.status_id">
           </v-select>
         </v-card>
@@ -149,8 +153,8 @@ export default {
 
   data: () => ({
     kbms: ['все', 'М', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', 'ИП'],
-    age_categories: ['все', 'младше 20', '20-25', '26-34', '35-44', '45-54', '55-64', 'старше 64'],
-    client_status: [],
+    age_categories: [],
+    clients_status: [],
     vehicle_year_categories: [],
     referrers: [],
     departments: [],
@@ -320,11 +324,31 @@ export default {
     setSaleCenters(response) {
       this.sale_centers = response;
     },
+
+    getClientsStatus() {
+      axios.get('/get_clients_status').then(response => {
+        this.setClientsStatus(response.data);
+      })
+    },
+    setClientsStatus(response) {
+      this.clients_status = response;
+    },
+
+    getAgesCategory() {
+      axios.get('/get_ages_category').then(response => {
+        this.setAgesCategory(response.data);
+      });
+    },
+    setAgesCategory(response) {
+      this.age_categories = response;
+    },
   },
 
-  beforeMount() {
+  mounted() {
     this.getSellerFilters();
     this.getVehicleFilters();
+    this.getClientsStatus();
+    this.getAgesCategory();
   }
 }
 </script>

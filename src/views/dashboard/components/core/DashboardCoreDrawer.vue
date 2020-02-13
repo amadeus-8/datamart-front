@@ -106,7 +106,17 @@
                 multiple
                 solo-inverted
                 chips
-                v-model="values.chart"></v-select>
+                v-model="values.chart">
+        <template v-slot:selection="{ item, index }">
+          <v-chip v-if="index === 0">
+            <span>{{ item.text }}</span>
+          </v-chip>
+          <span
+            v-if="index === 1"
+            class="grey--text caption"
+          >(+{{ values.chart.length - 1 }} другие)</span>
+        </template>
+      </v-select>
     </v-list>
   </v-navigation-drawer>
 </template>
@@ -180,7 +190,7 @@
           value: "radialBar"
         },
         {
-          text: "Диаграмма подвсечника",
+          text: "Диаграмма подсвечника",
           value: "candlestick"
         },
       ],

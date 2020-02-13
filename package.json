@@ -9,7 +9,7 @@
     "fixerror": "eslint --fix --fix-type suggestion ."
   },
   "dependencies": {
-    "apexcharts": "^3.15.3",
+    "apexcharts": "^3.15.5",
     "axios": "^0.19.0",
     "chartist": "^0.11.4",
     "core-js": "^2.6.5",

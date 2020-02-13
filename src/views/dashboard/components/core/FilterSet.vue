@@ -61,8 +61,10 @@
                     v-model="filters.age_category">
           </v-select>
 
-          <v-select :items="kbms"
-                    label="Кбм"
+          <v-select :items="[{name: 'Все', value: null}].concat(kbms)"
+                    label="КБМ"
+                    item-text="name"
+                    item-value="value"
                     v-model="filters.insurance_class">
           </v-select>
 
@@ -134,7 +136,8 @@
                   item-text="name"
                   item-value="id"
                   solo
-                  v-model="filters.referrer_id"></v-select>
+                  v-model="filters.referrer_id">
+        </v-select>
       </v-tab-item>
     </v-tabs-items>
   </v-flex>
@@ -152,7 +155,74 @@ export default {
   },
 
   data: () => ({
-    kbms: ['все', 'М', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', 'ИП'],
+    // kbms: ['М', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', 'ИП'],
+    kbms: [
+      {
+        name: 'M',
+        value: 'М',
+      },
+      {
+        name: '0',
+        value: '0',
+      },
+      {
+        name: '1',
+        value: '1',
+      },
+      {
+        name: '2',
+        value: '2',
+      },
+      {
+        name: '3',
+        value: '3',
+      },
+      {
+        name: '4',
+        value: '4',
+      },
+      {
+        name: '5',
+        value: '5',
+      },
+      {
+        name: '6',
+        value: '6',
+      },
+      {
+        name: '7',
+        value: '7',
+      },
+      {
+        name: '8',
+        value: '8',
+      },
+      {
+        name: '9',
+        value: '9',
+      },
+      {
+        name: '10',
+        value: '10',
+      },
+      {
+        name: '11',
+        value: '11',
+      },
+      {
+        name: '12',
+        value: '12',
+      },
+      {
+        name: '13',
+        value: '13',
+      },
+      {
+        name: 'ИП',
+        value: 'ИП',
+      },
+    ],
+
     age_categories: [],
     clients_status: [],
     vehicle_year_categories: [],
@@ -188,12 +258,16 @@ export default {
         text: "Департамент",
         value: "department"
       },
+      {
+        text: "Статус",
+        value: 'status'
+      }
     ],
 
     filter_values: [
       {
-        text: 'ГПО ВТС',
-        value: 'ogpo_vts_count',
+        text: 'Премия ОС ГПО ВТС',
+        value: 'ogpo_vts_result',
       },
       {
         text: 'Медицина (Все из узла ДМС)',
@@ -219,10 +293,10 @@ export default {
         text: 'ВЗР (все из узла страхование путеш-в)',
         value: 'tour_count',
       },
-      {
-        text: 'Премия ОС ГПО ВТС',
-        value: 'ogpo_vts_result',
-      },
+      // {
+      //   text: 'ГПО ВТС',
+      //   value: 'ogpo_vts_count',
+      // },
       {
         text: 'Премии др.продукты (Кросс + доброволки)',
         value: 'vts_cross_result',
@@ -231,14 +305,14 @@ export default {
         text: 'Сумма премий ВТС',
         value: 'vts_overall_sum',
       },
-      {
-        text: 'Ср. чек общий (ГПО ВТС, кросс, доброволки)',
-        value: 'avg_sum',
-      },
-      {
-        text: 'Ср.чек кросс и доброволки',
-        value: 'avg_cross_result',
-      },
+      // {
+      //   text: 'Ср. чек общий (ГПО ВТС, кросс, доброволки)',
+      //   value: 'avg_sum',
+      // },
+      // {
+      //   text: 'Ср.чек кросс и доброволки',
+      //   value: 'avg_cross_result',
+      // },
       {
         text: 'Кол-во Убытков общее',
         value: 'overall_lost_count',
@@ -328,7 +402,7 @@ export default {
     getClientsStatus() {
       axios.get('/get_clients_status').then(response => {
         this.setClientsStatus(response.data);
-      })
+      });
     },
     setClientsStatus(response) {
       this.clients_status = response;

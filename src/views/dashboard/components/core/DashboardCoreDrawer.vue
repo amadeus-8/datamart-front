@@ -5,7 +5,6 @@
                        app
                        width="260"
                        v-bind="$attrs">
-
     <v-list-item two-line>
       <v-list-item-content>
         <v-list-item-title class="text-uppercase font-weight-regular display-2">
@@ -88,33 +87,21 @@
     </v-list>
 
     <v-list class="pl-3 pr-3 pt-0 pb-0">
-      <div class="text-xs-center pl-2 pb-2 body-2 text-uppercase sidebar-filter">Таблицы</div>
-      <v-select :items="[{text: 'Не выбрано', value: null}].concat(tables)"
-                label="Таблицы"
+      <div class="text-xs-center pl-2 pb-2 body-2 text-uppercase sidebar-filter">Вид</div>
+      <v-select label="Не выбрано"
+                :items="view_types"
                 item-text="text"
                 item-value="value"
-                solo-inverted
-                v-model="values.view"></v-select>
-    </v-list>
-
-    <v-list class="pl-3 pr-3 pt-0 pb-0">
-      <div class="text-xs-center pl-2 pb-2 body-2 text-uppercase sidebar-filter">Графики</div>
-      <v-select :items="charts"
-                label="Графики"
-                item-text="text"
-                item-value="value"
-                multiple
-                solo-inverted
+                v-model="values.view_type"
                 chips
-                v-model="values.chart">
+                multiple
+                solo-inverted>
         <template v-slot:selection="{ item, index }">
           <v-chip v-if="index === 0">
             <span>{{ item.text }}</span>
           </v-chip>
-          <span
-            v-if="index === 1"
-            class="grey--text caption"
-          >(+{{ values.chart.length - 1 }} другие)</span>
+          <span v-if="index === 1"
+                class="grey--text caption">(+{{ values.chart.length - 1 }} другие)</span>
         </template>
       </v-select>
     </v-list>
@@ -204,6 +191,66 @@
       ],
 
       regions: [],
+
+      view_types: [
+        {
+          header: 'Таблицы'
+        },
+        {
+          text: "Сводная таблица",
+          value: "pivot",
+        },
+        {
+          text: "Сравнительная таблица",
+          value: "comparative",
+        },
+        {
+          divider: true,
+        },
+        {
+          header: 'Графики'
+        },
+        {
+          text: "Линейная диаграмма",
+          value: "line"
+        },
+        {
+          text: "Секторная диаграмма",
+          value: "area"
+        },
+        {
+          text: "Столбчатая диаграмма",
+          value: "bar"
+        },
+        {
+          text: "Круговая диаграмма",
+          value: "pie"
+        },
+        // {
+        //   text: "Интерактивная кольцевая диаграмма",
+        //   value: "donut"
+        // },
+        // {
+        //   text: "Диаграмма рассеяния",
+        //   value: "scatter"
+        // },
+        // {
+        //   text: "Пузырьковая диаграмма",
+        //   value: "bubble"
+        // },
+        {
+          text: "Тепловая карта",
+          value: "heatmap"
+        },
+        // {
+        //   text: "Радиальная диаграмма",
+        //   value: "radialBar"
+        // },
+        // {
+        //   text: "Диаграмма подсвечника",
+        //   value: "candlestick"
+        // },
+      ],
     }),
 
     beforeMount() {

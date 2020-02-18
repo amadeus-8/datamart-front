@@ -136,8 +136,7 @@
                   item-text="name"
                   item-value="id"
                   solo
-                  v-model="filters.referrer_id">
-        </v-select>
+                  v-model="filters.referrer_id"></v-select>
       </v-tab-item>
     </v-tabs-items>
   </v-flex>

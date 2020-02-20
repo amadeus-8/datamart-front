@@ -44,6 +44,7 @@
         columns: null,
         rows: null,
         values: 'vts_overall_sum',
+        query_type: '',
       },
 
       values: {

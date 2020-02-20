@@ -222,7 +222,7 @@
                                     :computedValues="computedValues"></dashboard-graph-filter>
             <template v-slot:activator="{ on }">
               <div class="d-flex justify-space-between">
-                <v-icon color="success" v-on="on">mdi-settings</v-icon>
+                <v-icon color="success" v-on="on" @click="changeType('line_chart')">mdi-settings</v-icon>
               </div>
             </template>
           </v-menu>
@@ -247,7 +247,7 @@
                                     :computedValues="computedValues"></dashboard-graph-filter>
             <template v-slot:activator="{ on }">
               <div class="d-flex justify-space-between">
-                <v-icon color="success" v-on="on">mdi-settings</v-icon>
+                <v-icon color="success" v-on="on" @click="changeType('area_chart')">mdi-settings</v-icon>
               </div>
             </template>
           </v-menu>
@@ -272,11 +272,11 @@
                                     :computedValues="computedValues"></dashboard-graph-filter>
             <template v-slot:activator="{ on }">
               <div class="d-flex justify-space-between">
-                <v-icon color="success" v-on="on">mdi-settings</v-icon>
+                <v-icon color="success" v-on="on" @click="changeType('bar_chart')">mdi-settings</v-icon>
               </div>
             </template>
           </v-menu>
-          <apexchart  width="500" type="bar" :options="barChartOptions" :series="barChartOptions" v-if="showBar"></apexchart>
+          <apexchart  width="500" type="bar"  :options="barChartOptions" :series="barChartData" v-if="showBar"></apexchart>
           <div class="d-flex justify-end" v-if="showBar">
             <v-btn small color="success" @click="deleteCharts(barChartData)">Удалить</v-btn>
           </div>
@@ -297,17 +297,17 @@
                                     :computedValues="computedValues"></dashboard-graph-filter>
             <template v-slot:activator="{ on }">
               <div class="d-flex justify-space-between">
-                <v-icon color="success" v-on="on">mdi-settings</v-icon>
+                <v-icon color="success" v-on="on" @click="changeType('pie_chart')">mdi-settings</v-icon>
               </div>
             </template>
           </v-menu>
-          <apexchart  width="500" type="pie" :options="pieChartOptions" :series="pieChartData" v-if="showPie"></apexchart>
+          <apexchart  width="500" type="pie" :options="pieChartOptions" :series="pieChartDatas.data" v-if="showPie"></apexchart>
           <div class="d-flex justify-end" v-if="showPie">
             <v-btn small color="success" @click="deleteCharts(pieChartData)">Удалить</v-btn>
           </div>
         </base-material-card>
       </div>
-      <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('heatmap')">
+      <!--div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('heatmap')">
         <base-material-card icon="mdi-earth"
                             title="Тепловая карта">
           <v-menu :close-on-content-click="false"
@@ -331,7 +331,7 @@
             <v-btn small color="success" @click="deleteCharts(heatChartData)">Удалить</v-btn>
           </div>
         </base-material-card>
-      </div>
+      </div-->
     </div>
 
     <div class="py-3" />
@@ -362,6 +362,9 @@
       },
 
       data: () => ({
+        pieChartDatas:{
+          data:null
+        },
         series: [2, 4, 1, 2, 1, 1],
 
         comparative_table_result: [],
@@ -394,12 +397,37 @@
           }
         },
         barChartOptions: {
+          dataLabels: {
+            enabled: false
+          },
+          // plotOptions: {
+          //   bar: {
+          //     horizontal: true,
+          //   }
+          // },
           xaxis: {
             categories: [],
           }
         },
         pieChartOptions: {
           labels: [],
+          // chartOptions: {
+          //   chart: {
+          //     width: 380,
+          //     type: 'pie',
+          //   },
+          //   responsive: [{
+          //     breakpoint: 480,
+          //     options: {
+          //       chart: {
+          //         width: 200
+          //       },
+          //       legend: {
+          //         position: 'bottom'
+          //       }
+          //     }
+          //   }]
+          // },
         },
         heatChartOptions: {
           xaxis: {
@@ -415,6 +443,9 @@
       }),
 
       methods: {
+        changeType(value) {
+          this.filters.query_type = value;
+        },
         setIsLoading(value) {
           this.values.isLoading = value;
         },
@@ -652,9 +683,12 @@
               this.setIsLoading(false);
               break;
             case 'pie':
-              response.series.forEach(item => {
-                if(item.value === vm.filters.values) vm.pieChartData.push(item);
-              });
+              //console.log(response.series[0].data);
+              vm.pieChartData.push(response.series[0].data);
+              this.pieChartDatas.data = response.series[0].data;
+              // response.series.forEach(item => {
+              //   if(item.value === vm.filters.values) vm.pieChartData.push(item);
+              // });
               this.pieChartOptions.labels = response.xaxis;
               this.showPie = true;
               this.setIsLoading(false);

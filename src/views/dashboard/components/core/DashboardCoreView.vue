@@ -1,10 +1,16 @@
 <template>
   <v-content>
+
+    <button @click="getSavedData()" class="mr-3" style="color: #4caf50 !important; border: 2px solid #4caf50 !important;">Show SavedData</button>
+    <button @click="block.savedData = false" style="color: #4caf50 !important; border: 2px solid #4caf50 !important;">Show NewData</button>
+
     <dashboard-core-drawer :filters="filters"
                            :values="values"></dashboard-core-drawer>
     <summary-tables :filters="filters"
                     :values="values"
-                    :computedValues="computedValues"></summary-tables>
+                    :computedValues="computedValues"
+                    :savedData="savedData"
+                    :block="block"></summary-tables>
     <div class="text-center">
       <v-overlay :z-index="10000" v-show="values.isLoading">
         <v-progress-circular indeterminate size="80"></v-progress-circular>
@@ -25,6 +31,13 @@
     },
 
     data: () => ({
+      savedData: {
+        pivot_table_result: '',
+        comparative_table_result: '',
+      },
+      block: {
+        savedData: false
+      },
       filters: {
         from_date: new Date('2019-01-01').toISOString().substr(0, 10),
         to_date: new Date('2019-01-30').toISOString().substr(0, 10),
@@ -243,6 +256,61 @@
     }),
 
     methods: {
+      getSavedData(){
+        this.setLoading(true);
+        if(this.values.view_type.length === 0){
+          this.values.view_type.push('pivot');
+        }
+        for(var i=0; i < this.values.view_type.length;i++)
+        {
+          var item = this.values.view_type[i];
+          axios.post('/get_saved_data',
+          {
+            type:this.values.view_type[i],
+            from_date:this.filters.from_date,
+            to_date:this.filters.to_date
+          },item).then(response => {
+            if(item === 'pivot') {
+              this.setPivotTable(response.data);
+            }
+            if(item === 'comparative') {
+              this.setComparativeTable(response.data);
+            }
+            if(item !== 'comparative' && item !== 'pivot') {
+              this.setChartOptions(this.values.view_type[i],response.data);
+            }
+            // else if(this.values.view_type[i] === 'line') {
+            //   this.setLineChart(response.data);
+            // } else if(this.values.view_type[i] === 'area') {
+            //   this.setPivotTable(response.data);
+            // } else if(this.values.view_type[i] === 'bar') {
+            //   this.setPivotTable(response.data);
+            // } else if(this.values.view_type[i] === 'pie') {
+            //   this.setPivotTable(response.data);
+            // }
+            this.block.savedData = true;
+          }).catch(error => {
+            alert(error);
+            this.setLoading(false);
+          });
+        }
+      },
+      setPivotTable(response) {
+        this.savedData.pivot_table_result = response;
+        this.setLoading(false);
+      },
+      setComparativeTable(response) {
+        this.savedData.comparative_table_result = response;
+        this.setLoading(false);
+      },
+
+      setChartOptions(type, response) {
+        //...
+        this.setLoading(false);
+      },
+      setLoading(value) {
+        this.values.isLoading = value;
+      },
       getVehicleFilters() {
         axios.get('/get_vehicle_filters').then((response) => {
           this.setVehicleYearCategories(response.data.year_categories);

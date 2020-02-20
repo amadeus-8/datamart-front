@@ -2,336 +2,503 @@
   <v-container id="extended-tables"
                fluid
                tag="section">
-    <dashboard-core-app-bar></dashboard-core-app-bar>
 
-    <base-material-card color="success"
-                        icon="mdi-clipboard-text"
-                        inline
-                        title="Сводная таблица"
-                        class="px-5 py-3"
-                        v-if="values.view_type.includes('pivot')">
-      <v-menu :close-on-content-click="false"
-              :nudge-right="40"
-              style="background-color: #FFFFFF"
-              transition="scale-transition"
-              offset-y>
-        <dashboard-table-filter :filters="filters"
-                                :values="values"
-                                :sendTableFilters="sendTableFilters"
-                                :type="'pivot'"
-                                :computedValues="computedValues"></dashboard-table-filter>
-        <template v-slot:activator="{ on }">
-          <div class="d-flex justify-space-between">
-            <v-icon color="success" v-on="on">mdi-settings</v-icon>
-            <div class="d-flex">
-              <v-btn v-if="filters.values === 'ogpo_vts_result' ||
-                     filters.values === 'ogpo_vts_count' ||
-                     filters.values === 'vts_cross_result' ||
-                     filters.values === 'avg_cross_result' ||
-                     filters.values === 'vts_overall_sum' ||
-                     filters.values === 'avg_sum'"
-                     small outlined tile
-                     :color="buttonOneIsPressed ? 'success' : 'warning'"
-                     @click="switchTableType('sum')">Сумма</v-btn>
-              <v-btn v-if="filters.values === 'vts_cross_result' ||
-                     filters.values === 'avg_cross_result' ||
-                     filters.values === 'vts_overall_sum' ||
-                     filters.values === 'avg_sum'"
-                     small outlined tile
-                     :color="buttonTwoIsPressed ? 'success' : 'warning'"
-                     @click="switchTableType('avg')">Среднее</v-btn>
-              <v-btn v-if="filters.values === 'ogpo_vts_result' ||
-                     filters.values === 'ogpo_vts_count'"
-                     small outlined tile
-                     :color="buttonThreeIsPressed ? 'success' : 'warning'"
-                     @click="switchTableType('amount')">Количество</v-btn>
-            </div>
+    <div id="savedData" v-if="this.block.savedData">
+      <!--dashboard-core-app-bar></dashboard-core-app-bar-->
+      <h1>Saved Data</h1>
+      <base-material-card color="success"
+                          icon="mdi-clipboard-text"
+                          inline
+                          title="Сводная таблица"
+                          class="px-5 py-3"
+                          v-if="values.view_type.includes('pivot') || values.view_type.length == 0"
+                          v-for="(pivot_table_result,key) in savedData.pivot_table_result">
+        <div v-if="Object.keys(savedData.pivot_table_result).length > 0">
+          <v-simple-table id="pivotTable">
+            <template v-slot:default>
+              <thead>
+              <tr>
+                <th class="text-left">{{ pivot_table_result.property }}</th>
+                <th v-for="(item) in pivot_table_result.labels" v-if="pivot_table_result.labels.length > 1">{{ item }}</th>
+                <th v-else>
+                  <span v-if="filters.values === 'ogpo_vts_result' || filters.values === 'ogpo_vts_count'">Премия ОС ГПО ВТС</span>
+                  <span v-if="filters.values === 'vts_cross_result' || filters.values === 'avg_cross_result'">Премии др.продукты (Кросс + доброволки)</span>
+                  <span v-if="filters.values === 'vts_overall_sum' || filters.values === 'avg_sum'">Сумма премий ВТС</span>
+                  <span v-if="filters.values === 'medical_count'">Медицина (Все из узла ДМС)</span>
+                  <span v-if="filters.values === 'megapolis_count'">Мегаполис (Мегаполис, Мегаполис 100,  Страхование имущества)</span>
+                  <span v-if="filters.values === 'amortization_count'">Амортизация</span>
+                  <span v-if="filters.values === 'kasko_count'">Каско (Автокаско, Классик, Прогресс)</span>
+                  <span v-if="filters.values === 'kommesk_comfort_count'">Коммеск-Комфорт</span>
+                  <span v-if="filters.values === 'tour_count'">ВЗР (все из узла страхование путеш-в)</span>
+                  <span v-if="filters.values === 'overall_lost_count'">Кол-во Убытков общее</span>
+                  <span v-if="filters.values === 'vts_lost_count'">Кол-во Убытков по ОС ГПО ВТС</span>
+                  <span v-if="filters.values === 'declared_claims'">Заявленные Претензии(статус - Оформление)</span>
+                  <span v-if="filters.values === 'pending_claims'">Рассмотрение (Статусы - рассм-ся, на подписи)</span>
+                  <span v-if="filters.values === 'accepted_claims'">Статусы - Подписан, Урегулировано</span>
+                  <span v-if="filters.values === 'payout_reject_claims'">Статус - Отказ в возмещении</span>
+                  <span v-if="filters.values === 'client_reject_claims'">Статус - Отказ заявителя</span>
+                </th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr v-for="(item, key) in pivot_table_result.data">
+                <td>{{ key }}</td>
+                <td v-for="items in item" >
+                        <span v-for="(i, k) in items" v-if="k == filters.values">
+                          <span v-if="i == null"> 0 </span>
+                          <span v-else>{{ i.toLocaleString() }}</span>
+                        </span>
+                </td>
+              </tr>
+              </tbody>
+            </template>
+          </v-simple-table>
+          <div class="d-flex justify-end mt-2">
+            <v-btn tile small color="success" @click="exportTableToExcel('pivotTable')">
+              <v-icon small color="white" class="mr-1">mdi-arrow-down-bold-box-outline</v-icon>
+              <span>Скачать</span>
+            </v-btn>
           </div>
-        </template>
-      </v-menu>
-      <div v-if="Object.keys(pivot_table_result).length > 0">
-        <v-simple-table id="pivotTable">
-          <template v-slot:default>
-            <thead>
-            <tr>
-              <th class="text-left">{{ pivot_table_result.property }}</th>
-              <th v-for="(item) in pivot_table_result.labels" v-if="pivot_table_result.labels.length > 1">{{ item }}</th>
-              <th v-else>
-                <span v-if="filters.values === 'ogpo_vts_result' || filters.values === 'ogpo_vts_count'">Премия ОС ГПО ВТС</span>
-                <span v-if="filters.values === 'vts_cross_result' || filters.values === 'avg_cross_result'">Премии др.продукты (Кросс + доброволки)</span>
-                <span v-if="filters.values === 'vts_overall_sum' || filters.values === 'avg_sum'">Сумма премий ВТС</span>
-                <span v-if="filters.values === 'medical_count'">Медицина (Все из узла ДМС)</span>
-                <span v-if="filters.values === 'megapolis_count'">Мегаполис (Мегаполис, Мегаполис 100,  Страхование имущества)</span>
-                <span v-if="filters.values === 'amortization_count'">Амортизация</span>
-                <span v-if="filters.values === 'kasko_count'">Каско (Автокаско, Классик, Прогресс)</span>
-                <span v-if="filters.values === 'kommesk_comfort_count'">Коммеск-Комфорт</span>
-                <span v-if="filters.values === 'tour_count'">ВЗР (все из узла страхование путеш-в)</span>
-                <span v-if="filters.values === 'overall_lost_count'">Кол-во Убытков общее</span>
-                <span v-if="filters.values === 'vts_lost_count'">Кол-во Убытков по ОС ГПО ВТС</span>
-                <span v-if="filters.values === 'declared_claims'">Заявленные Претензии(статус - Оформление)</span>
-                <span v-if="filters.values === 'pending_claims'">Рассмотрение (Статусы - рассм-ся, на подписи)</span>
-                <span v-if="filters.values === 'accepted_claims'">Статусы - Подписан, Урегулировано</span>
-                <span v-if="filters.values === 'payout_reject_claims'">Статус - Отказ в возмещении</span>
-                <span v-if="filters.values === 'client_reject_claims'">Статус - Отказ заявителя</span>
-              </th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="(item, key) in pivot_table_result.data">
-              <td>{{ key }}</td>
-              <td v-for="items in item" >
-                <span v-for="(i, k) in items" v-if="k == filters.values">
-                  <span v-if="i == null"> 0 </span>
-                  <span v-else>{{ i.toLocaleString() }}</span>
-                </span>
-              </td>
-            </tr>
-            </tbody>
-          </template>
-        </v-simple-table>
-        <div class="d-flex justify-end mt-2">
-          <v-btn tile small color="success" @click="exportTableToExcel('pivotTable')">
-            <v-icon small color="white" class="mr-1">mdi-arrow-down-bold-box-outline</v-icon>
-            <span>Скачать</span>
-          </v-btn>
         </div>
-      </div>
-    </base-material-card>
+      </base-material-card>
 
-    <base-material-card color="success"
-                        icon="mdi-clipboard-text"
-                        inline
-                        title="Сравнительная таблица"
-                        class="px-5 py-3 mb-5"
-                        v-if="values.view_type.includes('comparative')">
-      <v-menu :close-on-content-click="false"
-              :nudge-right="40"
-              style="background-color: #FFFFFF"
-              transition="scale-transition"
-              offset-y>
-        <dashboard-table-filter :filters="filters"
-                                :values="values"
-                                :sendTableFilters="sendTableFilters"
-                                :type="'comparative'"
-                                :computedValues="computedValues"></dashboard-table-filter>
-        <template v-slot:activator="{ on }">
-          <div class="d-flex justify-space-between">
-            <v-icon color="success" v-on="on">mdi-settings</v-icon>
-            <div class="d-flex">
-              <v-btn v-if="filters.values === 'ogpo_vts_result' ||
-                     filters.values === 'ogpo_vts_count' ||
-                     filters.values === 'vts_cross_result' ||
-                     filters.values === 'avg_cross_result' ||
-                     filters.values === 'vts_overall_sum' ||
-                     filters.values === 'avg_sum'"
-                     small outlined tile
-                     :color="buttonOneIsPressed ? 'success' : 'warning'"
-                     @click="switchTableType('sum')">Сумма</v-btn>
-              <v-btn v-if="filters.values === 'vts_cross_result' ||
-                     filters.values === 'avg_cross_result' ||
-                     filters.values === 'vts_overall_sum' ||
-                     filters.values === 'avg_sum'"
-                     small outlined tile
-                     :color="buttonTwoIsPressed ? 'success' : 'warning'"
-                     @click="switchTableType('avg')">Среднее</v-btn>
-              <v-btn v-if="filters.values === 'ogpo_vts_result' ||
-                     filters.values === 'ogpo_vts_count'"
-                     small outlined tile
-                     :color="buttonThreeIsPressed ? 'success' : 'warning'"
-                     @click="switchTableType('amount')">Количество</v-btn>
-            </div>
+      <base-material-card color="success"
+                          icon="mdi-clipboard-text"
+                          inline
+                          title="Сравнительная таблица"
+                          class="px-5 py-3 mb-5"
+                          v-if="values.view_type.includes('comparative')"
+                          v-for="(comparative_table_result,key) in savedData.comparative_table_result">
+        <div  v-if="Object.keys(savedData.comparative_table_result).length > 0">
+          <v-simple-table id="comparativeTable">
+            <template v-slot:default>
+              <thead>
+              <tr>
+                <th class="text-left">{{ comparative_table_result.property }}</th>
+                <th v-for="(item) in comparative_table_result.labels">{{ item }}</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr v-for="(item, key) in comparative_table_result.data">
+                <td>{{ key }}</td>
+                <td v-for="(item, index) in item[0]" v-if="index == filters.values">
+                  <span v-if="item == null">0</span>
+                  <span v-else>{{ item.toLocaleString() }}</span>
+                </td>
+                <td v-for="(item, index) in item[1]" v-if="index == filters.values">
+                  {{ item }}%
+                </td>
+                <td v-for="(item, index) in item[2]" v-if="index == filters.values">
+                  <span v-if="item == null">0</span>
+                  <span v-else>{{ item.toLocaleString() }}</span>
+                </td>
+                <td v-for="(item, index) in item[3]" v-if="index == filters.values">
+                  {{ item }}%
+                </td>
+                <td v-for="(item, index) in item[4]" v-if="index == filters.values">
+                  {{ item }}%
+                </td>
+              </tr>
+              <tr>
+                <td>Общий итог</td>
+                <td v-for="(item,key) in comparative_table_result.bottomData[0]" v-if="key == filters.values">
+                  <span v-if="item == null">0</span>
+                  <span v-else>{{ item.toLocaleString() }}</span>
+                </td>
+                <td>
+                  100%
+                </td>
+                <td v-for="(item,key) in comparative_table_result.bottomData[1]" v-if="key == filters.values">
+                  <span v-if="item == null">0</span>
+                  <span v-else>{{ item.toLocaleString() }}</span>
+                </td>
+                <td>
+                  100%
+                </td>
+                <td v-for="(item,key) in comparative_table_result.bottomData[2]" v-if="key == filters.values">
+                  <span v-if="item == null">0</span>
+                  <span v-else>{{ item.toLocaleString() }}%</span>
+                </td>
+              </tr>
+              </tbody>
+            </template>
+          </v-simple-table>
+          <div class="d-flex justify-end mt-2">
+            <v-btn tile small color="success" @click="exportTableToExcel('comparativeTable')">
+              <v-icon small color="white" class="mr-1">mdi-arrow-down-bold-box-outline</v-icon>
+              <span>Скачать</span>
+            </v-btn>
           </div>
-        </template>
-      </v-menu>
-      <div v-if="Object.keys(comparative_table_result).length > 0">
-        <v-simple-table id="comparativeTable">
-          <template v-slot:default>
-            <thead>
-            <tr>
-              <th class="text-left">{{ comparative_table_result.property }}</th>
-              <th v-for="(item) in comparative_table_result.labels">{{ item }}</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="(item, key) in comparative_table_result.data">
-              <td>{{ key }}</td>
-              <td v-for="(item, index) in item[0]" v-if="index == filters.values">
-                <span v-if="item == null">0</span>
-                <span v-else>{{ item.toLocaleString() }}</span>
-              </td>
-              <td v-for="(item, index) in item[1]" v-if="index == filters.values">
-                {{ item }}%
-              </td>
-              <td v-for="(item, index) in item[2]" v-if="index == filters.values">
-                <span v-if="item == null">0</span>
-                <span v-else>{{ item.toLocaleString() }}</span>
-              </td>
-              <td v-for="(item, index) in item[3]" v-if="index == filters.values">
-                {{ item }}%
-              </td>
-              <td v-for="(item, index) in item[4]" v-if="index == filters.values">
-                {{ item }}%
-              </td>
-            </tr>
-            <tr>
-              <td>Общий итог</td>
-              <td v-for="(item,key) in comparative_table_result.bottomData[0]" v-if="key == filters.values">
-                <span v-if="item == null">0</span>
-                <span v-else>{{ item.toLocaleString() }}</span>
-              </td>
-              <td>
-                100%
-              </td>
-              <td v-for="(item,key) in comparative_table_result.bottomData[1]" v-if="key == filters.values">
-                <span v-if="item == null">0</span>
-                <span v-else>{{ item.toLocaleString() }}</span>
-              </td>
-              <td>
-                100%
-              </td>
-              <td v-for="(item,key) in comparative_table_result.bottomData[2]" v-if="key == filters.values">
-                <span v-if="item == null">0</span>
-                <span v-else>{{ item.toLocaleString() }}%</span>
-              </td>
-            </tr>
-            </tbody>
-          </template>
-        </v-simple-table>
-        <div class="d-flex justify-end mt-2">
-          <v-btn tile small color="success" @click="exportTableToExcel('comparativeTable')">
-            <v-icon small color="white" class="mr-1">mdi-arrow-down-bold-box-outline</v-icon>
-            <span>Скачать</span>
-          </v-btn>
         </div>
-      </div>
-    </base-material-card>
-
-    <div class="d-flex row">
-      <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('line')">
-        <base-material-card icon="mdi-earth"
-                            title="Линейная диаграмма">
-          <v-menu :close-on-content-click="false"
-                  :nudge-right="40"
-                  style="background-color: #FFFFFF"
-                  transition="scale-transition"
-                  offset-y>
-            <dashboard-graph-filter :filters="filters"
-                                    :values="values"
-                                    :type="'line'"
-                                    :sendChartFilters="sendChartFilters"
-                                    :computedValues="computedValues"></dashboard-graph-filter>
-            <template v-slot:activator="{ on }">
-              <div class="d-flex justify-space-between">
-                <v-icon color="success" v-on="on" @click="changeType('line_chart')">mdi-settings</v-icon>
-              </div>
-            </template>
-          </v-menu>
-          <apexchart  width="500" type="line" :options="lineChartOptions" :series="lineChartData" v-if="showLine"></apexchart >
-          <div class="d-flex justify-end" v-if="showLine">
-            <v-btn small color="success" @click="deleteCharts(lineChartData)">Удалить</v-btn>
-          </div>
-        </base-material-card>
-      </div>
-      <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('area')">
-        <base-material-card icon="mdi-earth"
-                            title="Секторная диаграмма">
-          <v-menu :close-on-content-click="false"
-                  :nudge-right="40"
-                  style="background-color: #FFFFFF"
-                  transition="scale-transition"
-                  offset-y>
-            <dashboard-graph-filter :filters="filters"
-                                    :values="values"
-                                    :type="'area'"
-                                    :sendChartFilters="sendChartFilters"
-                                    :computedValues="computedValues"></dashboard-graph-filter>
-            <template v-slot:activator="{ on }">
-              <div class="d-flex justify-space-between">
-                <v-icon color="success" v-on="on" @click="changeType('area_chart')">mdi-settings</v-icon>
-              </div>
-            </template>
-          </v-menu>
-          <apexchart  width="500" type="area" :options="areaChartOptions" :series="areaChartData" v-if="showArea"></apexchart >
-          <div class="d-flex justify-end" v-if="showArea">
-            <v-btn small color="success" @click="deleteCharts(areaChartData)">Удалить</v-btn>
-          </div>
-        </base-material-card>
-      </div>
-      <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('bar')">
-        <base-material-card icon="mdi-earth"
-                            title="Столбчатая диаграмма">
-          <v-menu :close-on-content-click="false"
-                  :nudge-right="40"
-                  style="background-color: #FFFFFF"
-                  transition="scale-transition"
-                  offset-y>
-            <dashboard-graph-filter :filters="filters"
-                                    :values="values"
-                                    :type="'bar'"
-                                    :sendChartFilters="sendChartFilters"
-                                    :computedValues="computedValues"></dashboard-graph-filter>
-            <template v-slot:activator="{ on }">
-              <div class="d-flex justify-space-between">
-                <v-icon color="success" v-on="on" @click="changeType('bar_chart')">mdi-settings</v-icon>
-              </div>
-            </template>
-          </v-menu>
-          <apexchart  width="500" type="bar"  :options="barChartOptions" :series="barChartData" v-if="showBar"></apexchart>
-          <div class="d-flex justify-end" v-if="showBar">
-            <v-btn small color="success" @click="deleteCharts(barChartData)">Удалить</v-btn>
-          </div>
-        </base-material-card>
-      </div>
-      <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('pie')">
-        <base-material-card icon="mdi-earth"
-                            title="Круговая диаграмма">
-          <v-menu :close-on-content-click="false"
-                  :nudge-right="40"
-                  style="background-color: #FFFFFF"
-                  transition="scale-transition"
-                  offset-y>
-            <dashboard-graph-filter :filters="filters"
-                                    :values="values"
-                                    :type="'pie'"
-                                    :sendChartFilters="sendChartFilters"
-                                    :computedValues="computedValues"></dashboard-graph-filter>
-            <template v-slot:activator="{ on }">
-              <div class="d-flex justify-space-between">
-                <v-icon color="success" v-on="on" @click="changeType('pie_chart')">mdi-settings</v-icon>
-              </div>
-            </template>
-          </v-menu>
-          <apexchart  width="500" type="pie" :options="pieChartOptions" :series="pieChartDatas.data" v-if="showPie"></apexchart>
-          <div class="d-flex justify-end" v-if="showPie">
-            <v-btn small color="success" @click="deleteCharts(pieChartData)">Удалить</v-btn>
-          </div>
-        </base-material-card>
-      </div>
-      <!--div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('heatmap')">
-        <base-material-card icon="mdi-earth"
-                            title="Тепловая карта">
-          <v-menu :close-on-content-click="false"
-                  :nudge-right="40"
-                  style="background-color: #FFFFFF"
-                  transition="scale-transition"
-                  offset-y>
-            <dashboard-graph-filter :filters="filters"
-                                    :values="values"
-                                    :type="'heatmap'"
-                                    :sendChartFilters="sendChartFilters"
-                                    :computedValues="computedValues"></dashboard-graph-filter>
-            <template v-slot:activator="{ on }">
-              <div class="d-flex justify-space-between">
-                <v-icon color="success" v-on="on">mdi-settings</v-icon>
-              </div>
-            </template>
-          </v-menu>
-          <apexchart  width="500" type="heatmap" :options="heatChartOptions" :series="series" v-if="showHeat"></apexchart>
-          <div class="d-flex justify-end" v-if="showHeat">
-            <v-btn small color="success" @click="deleteCharts(heatChartData)">Удалить</v-btn>
-          </div>
-        </base-material-card>
+      </base-material-card>
+      <!--div class="d-flex row">
+        <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('line')">
+          <base-material-card icon="mdi-earth" title="Линейная диаграмма">
+            <apexchart  width="500" type="line" :options="lineChartOptions" :series="lineChartData" v-if="showLine"></apexchart >
+            <div class="d-flex justify-end" v-if="showLine">
+              <v-btn small color="success" @click="deleteCharts(lineChartData)">Удалить</v-btn>
+            </div>
+          </base-material-card>
+        </div>
+        <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('area')">
+          <base-material-card icon="mdi-earth" title="Секторная диаграмма">
+            <apexchart  width="500" type="area" :options="areaChartOptions" :series="areaChartData" v-if="showArea"></apexchart >
+            <div class="d-flex justify-end" v-if="showArea">
+              <v-btn small color="success" @click="deleteCharts(areaChartData)">Удалить</v-btn>
+            </div>
+          </base-material-card>
+        </div>
+        <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('bar')">
+          <base-material-card icon="mdi-earth" title="Столбчатая диаграмма">
+            <apexchart  width="500" type="bar"  :options="barChartOptions" :series="barChartData" v-if="showBar"></apexchart>
+            <div class="d-flex justify-end" v-if="showBar">
+              <v-btn small color="success" @click="deleteCharts(barChartData)">Удалить</v-btn>
+            </div>
+          </base-material-card>
+        </div>
+        <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('pie')">
+          <base-material-card icon="mdi-earth" title="Круговая диаграмма">
+            <apexchart  width="500" type="pie" :options="pieChartOptions" :series="pieChartDatas.data" v-if="showPie"></apexchart>
+            <div class="d-flex justify-end" v-if="showPie">
+              <v-btn small color="success" @click="deleteCharts(pieChartData)">Удалить</v-btn>
+            </div>
+          </base-material-card>
+        </div>
       </div-->
+    </div>
+
+    <div id="newData" v-if="!this.block.savedData">
+      <dashboard-core-app-bar></dashboard-core-app-bar>
+      <base-material-card color="success"
+                          icon="mdi-clipboard-text"
+                          inline
+                          title="Сводная таблица"
+                          class="px-5 py-3"
+                          v-if="values.view_type.includes('pivot')">
+        <v-menu :close-on-content-click="false"
+                :nudge-right="40"
+                style="background-color: #FFFFFF"
+                transition="scale-transition"
+                offset-y>
+          <dashboard-table-filter :filters="filters"
+                                  :values="values"
+                                  :sendTableFilters="sendTableFilters"
+                                  :type="'pivot'"
+                                  :computedValues="computedValues"></dashboard-table-filter>
+          <template v-slot:activator="{ on }">
+            <div class="d-flex justify-space-between">
+              <v-icon color="success" v-on="on" @click="changeType('pivot')">mdi-settings</v-icon>
+              <div class="d-flex">
+                <v-btn v-if="filters.values === 'ogpo_vts_result' ||
+                         filters.values === 'ogpo_vts_count' ||
+                         filters.values === 'vts_cross_result' ||
+                         filters.values === 'avg_cross_result' ||
+                         filters.values === 'vts_overall_sum' ||
+                         filters.values === 'avg_sum'"
+                       small outlined tile
+                       :color="buttonOneIsPressed ? 'success' : 'warning'"
+                       @click="switchTableType('sum')">Сумма</v-btn>
+                <v-btn v-if="filters.values === 'vts_cross_result' ||
+                         filters.values === 'avg_cross_result' ||
+                         filters.values === 'vts_overall_sum' ||
+                         filters.values === 'avg_sum'"
+                       small outlined tile
+                       :color="buttonTwoIsPressed ? 'success' : 'warning'"
+                       @click="switchTableType('avg')">Среднее</v-btn>
+                <v-btn v-if="filters.values === 'ogpo_vts_result' ||
+                         filters.values === 'ogpo_vts_count'"
+                       small outlined tile
+                       :color="buttonThreeIsPressed ? 'success' : 'warning'"
+                       @click="switchTableType('amount')">Количество</v-btn>
+              </div>
+            </div>
+          </template>
+        </v-menu>
+        <div v-if="Object.keys(pivot_table_result).length > 0">
+          <v-simple-table id="pivotTable">
+            <template v-slot:default>
+              <thead>
+              <tr>
+                <th class="text-left">{{ pivot_table_result.property }}</th>
+                <th v-for="(item) in pivot_table_result.labels" v-if="pivot_table_result.labels.length > 1">{{ item }}</th>
+                <th v-else>
+                  <span v-if="filters.values === 'ogpo_vts_result' || filters.values === 'ogpo_vts_count'">Премия ОС ГПО ВТС</span>
+                  <span v-if="filters.values === 'vts_cross_result' || filters.values === 'avg_cross_result'">Премии др.продукты (Кросс + доброволки)</span>
+                  <span v-if="filters.values === 'vts_overall_sum' || filters.values === 'avg_sum'">Сумма премий ВТС</span>
+                  <span v-if="filters.values === 'medical_count'">Медицина (Все из узла ДМС)</span>
+                  <span v-if="filters.values === 'megapolis_count'">Мегаполис (Мегаполис, Мегаполис 100,  Страхование имущества)</span>
+                  <span v-if="filters.values === 'amortization_count'">Амортизация</span>
+                  <span v-if="filters.values === 'kasko_count'">Каско (Автокаско, Классик, Прогресс)</span>
+                  <span v-if="filters.values === 'kommesk_comfort_count'">Коммеск-Комфорт</span>
+                  <span v-if="filters.values === 'tour_count'">ВЗР (все из узла страхование путеш-в)</span>
+                  <span v-if="filters.values === 'overall_lost_count'">Кол-во Убытков общее</span>
+                  <span v-if="filters.values === 'vts_lost_count'">Кол-во Убытков по ОС ГПО ВТС</span>
+                  <span v-if="filters.values === 'declared_claims'">Заявленные Претензии(статус - Оформление)</span>
+                  <span v-if="filters.values === 'pending_claims'">Рассмотрение (Статусы - рассм-ся, на подписи)</span>
+                  <span v-if="filters.values === 'accepted_claims'">Статусы - Подписан, Урегулировано</span>
+                  <span v-if="filters.values === 'payout_reject_claims'">Статус - Отказ в возмещении</span>
+                  <span v-if="filters.values === 'client_reject_claims'">Статус - Отказ заявителя</span>
+                </th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr v-for="(item, key) in pivot_table_result.data">
+                <td>{{ key }}</td>
+                <td v-for="items in item" >
+                    <span v-for="(i, k) in items" v-if="k == filters.values">
+                      <span v-if="i == null"> 0 </span>
+                      <span v-else>{{ i.toLocaleString() }}</span>
+                    </span>
+                </td>
+              </tr>
+              </tbody>
+            </template>
+          </v-simple-table>
+          <div class="d-flex justify-end mt-2">
+            <v-btn tile small color="success" @click="exportTableToExcel('pivotTable')">
+              <v-icon small color="white" class="mr-1">mdi-arrow-down-bold-box-outline</v-icon>
+              <span>Скачать</span>
+            </v-btn>
+          </div>
+        </div>
+      </base-material-card>
+
+      <base-material-card color="success"
+                          icon="mdi-clipboard-text"
+                          inline
+                          title="Сравнительная таблица"
+                          class="px-5 py-3 mb-5"
+                          v-if="values.view_type.includes('comparative')">
+        <v-menu :close-on-content-click="false"
+                :nudge-right="40"
+                style="background-color: #FFFFFF"
+                transition="scale-transition"
+                offset-y>
+          <dashboard-table-filter :filters="filters"
+                                  :values="values"
+                                  :sendTableFilters="sendTableFilters"
+                                  :type="'comparative'"
+                                  :computedValues="computedValues"></dashboard-table-filter>
+          <template v-slot:activator="{ on }">
+            <div class="d-flex justify-space-between">
+              <v-icon color="success" v-on="on"  @click="changeType('comparative')">mdi-settings</v-icon>
+              <div class="d-flex">
+                <v-btn v-if="filters.values === 'ogpo_vts_result' ||
+                         filters.values === 'ogpo_vts_count' ||
+                         filters.values === 'vts_cross_result' ||
+                         filters.values === 'avg_cross_result' ||
+                         filters.values === 'vts_overall_sum' ||
+                         filters.values === 'avg_sum'"
+                       small outlined tile
+                       :color="buttonOneIsPressed ? 'success' : 'warning'"
+                       @click="switchTableType('sum')">Сумма</v-btn>
+                <v-btn v-if="filters.values === 'vts_cross_result' ||
+                         filters.values === 'avg_cross_result' ||
+                         filters.values === 'vts_overall_sum' ||
+                         filters.values === 'avg_sum'"
+                       small outlined tile
+                       :color="buttonTwoIsPressed ? 'success' : 'warning'"
+                       @click="switchTableType('avg')">Среднее</v-btn>
+                <v-btn v-if="filters.values === 'ogpo_vts_result' ||
+                         filters.values === 'ogpo_vts_count'"
+                       small outlined tile
+                       :color="buttonThreeIsPressed ? 'success' : 'warning'"
+                       @click="switchTableType('amount')">Количество</v-btn>
+              </div>
+            </div>
+          </template>
+        </v-menu>
+        <div v-if="Object.keys(comparative_table_result).length > 0">
+          <v-simple-table id="comparativeTable">
+            <template v-slot:default>
+              <thead>
+              <tr>
+                <th class="text-left">{{ comparative_table_result.property }}</th>
+                <th v-for="(item) in comparative_table_result.labels">{{ item }}</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr v-for="(item, key) in comparative_table_result.data">
+                <td>{{ key }}</td>
+                <td v-for="(item, index) in item[0]" v-if="index == filters.values">
+                  <span v-if="item == null">0</span>
+                  <span v-else>{{ item.toLocaleString() }}</span>
+                </td>
+                <td v-for="(item, index) in item[1]" v-if="index == filters.values">
+                  {{ item }}%
+                </td>
+                <td v-for="(item, index) in item[2]" v-if="index == filters.values">
+                  <span v-if="item == null">0</span>
+                  <span v-else>{{ item.toLocaleString() }}</span>
+                </td>
+                <td v-for="(item, index) in item[3]" v-if="index == filters.values">
+                  {{ item }}%
+                </td>
+                <td v-for="(item, index) in item[4]" v-if="index == filters.values">
+                  {{ item }}%
+                </td>
+              </tr>
+              <tr>
+                <td>Общий итог</td>
+                <td v-for="(item,key) in comparative_table_result.bottomData[0]" v-if="key == filters.values">
+                  <span v-if="item == null">0</span>
+                  <span v-else>{{ item.toLocaleString() }}</span>
+                </td>
+                <td>
+                  100%
+                </td>
+                <td v-for="(item,key) in comparative_table_result.bottomData[1]" v-if="key == filters.values">
+                  <span v-if="item == null">0</span>
+                  <span v-else>{{ item.toLocaleString() }}</span>
+                </td>
+                <td>
+                  100%
+                </td>
+                <td v-for="(item,key) in comparative_table_result.bottomData[2]" v-if="key == filters.values">
+                  <span v-if="item == null">0</span>
+                  <span v-else>{{ item.toLocaleString() }}%</span>
+                </td>
+              </tr>
+              </tbody>
+            </template>
+          </v-simple-table>
+          <div class="d-flex justify-end mt-2">
+            <v-btn tile small color="success" @click="exportTableToExcel('comparativeTable')">
+              <v-icon small color="white" class="mr-1">mdi-arrow-down-bold-box-outline</v-icon>
+              <span>Скачать</span>
+            </v-btn>
+          </div>
+        </div>
+      </base-material-card>
+
+      <div class="d-flex row">
+        <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('line')">
+          <base-material-card icon="mdi-earth"
+                              title="Линейная диаграмма">
+            <v-menu :close-on-content-click="false"
+                    :nudge-right="40"
+                    style="background-color: #FFFFFF"
+                    transition="scale-transition"
+                    offset-y>
+              <dashboard-graph-filter :filters="filters"
+                                      :values="values"
+                                      :type="'line'"
+                                      :sendChartFilters="sendChartFilters"
+                                      :computedValues="computedValues"></dashboard-graph-filter>
+              <template v-slot:activator="{ on }">
+                <div class="d-flex justify-space-between">
+                  <v-icon color="success" v-on="on" @click="changeType('line')">mdi-settings</v-icon>
+                </div>
+              </template>
+            </v-menu>
+            <apexchart  width="500" type="line" :options="lineChartOptions" :series="lineChartData" v-if="showLine"></apexchart >
+            <div class="d-flex justify-end" v-if="showLine">
+              <v-btn small color="success" @click="deleteCharts(lineChartData)">Удалить</v-btn>
+            </div>
+          </base-material-card>
+        </div>
+        <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('area')">
+          <base-material-card icon="mdi-earth"
+                              title="Секторная диаграмма">
+            <v-menu :close-on-content-click="false"
+                    :nudge-right="40"
+                    style="background-color: #FFFFFF"
+                    transition="scale-transition"
+                    offset-y>
+              <dashboard-graph-filter :filters="filters"
+                                      :values="values"
+                                      :type="'area'"
+                                      :sendChartFilters="sendChartFilters"
+                                      :computedValues="computedValues"></dashboard-graph-filter>
+              <template v-slot:activator="{ on }">
+                <div class="d-flex justify-space-between">
+                  <v-icon color="success" v-on="on" @click="changeType('area')">mdi-settings</v-icon>
+                </div>
+              </template>
+            </v-menu>
+            <apexchart  width="500" type="area" :options="areaChartOptions" :series="areaChartData" v-if="showArea"></apexchart >
+            <div class="d-flex justify-end" v-if="showArea">
+              <v-btn small color="success" @click="deleteCharts(areaChartData)">Удалить</v-btn>
+            </div>
+          </base-material-card>
+        </div>
+        <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('bar')">
+          <base-material-card icon="mdi-earth"
+                              title="Столбчатая диаграмма">
+            <v-menu :close-on-content-click="false"
+                    :nudge-right="40"
+                    style="background-color: #FFFFFF"
+                    transition="scale-transition"
+                    offset-y>
+              <dashboard-graph-filter :filters="filters"
+                                      :values="values"
+                                      :type="'bar'"
+                                      :sendChartFilters="sendChartFilters"
+                                      :computedValues="computedValues"></dashboard-graph-filter>
+              <template v-slot:activator="{ on }">
+                <div class="d-flex justify-space-between">
+                  <v-icon color="success" v-on="on" @click="changeType('bar')">mdi-settings</v-icon>
+                </div>
+              </template>
+            </v-menu>
+            <apexchart  width="500" type="bar"  :options="barChartOptions" :series="barChartData" v-if="showBar"></apexchart>
+            <div class="d-flex justify-end" v-if="showBar">
+              <v-btn small color="success" @click="deleteCharts(barChartData)">Удалить</v-btn>
+            </div>
+          </base-material-card>
+        </div>
+        <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('pie')">
+          <base-material-card icon="mdi-earth"
+                              title="Круговая диаграмма">
+            <v-menu :close-on-content-click="false"
+                    :nudge-right="40"
+                    style="background-color: #FFFFFF"
+                    transition="scale-transition"
+                    offset-y>
+              <dashboard-graph-filter :filters="filters"
+                                      :values="values"
+                                      :type="'pie'"
+                                      :sendChartFilters="sendChartFilters"
+                                      :computedValues="computedValues"></dashboard-graph-filter>
+              <template v-slot:activator="{ on }">
+                <div class="d-flex justify-space-between">
+                  <v-icon color="success" v-on="on" @click="changeType('pie')">mdi-settings</v-icon>
+                </div>
+              </template>
+            </v-menu>
+            <apexchart  width="500" type="pie" :options="pieChartOptions" :series="pieChartDatas.data" v-if="showPie"></apexchart>
+            <div class="d-flex justify-end" v-if="showPie">
+              <v-btn small color="success" @click="deleteCharts(pieChartData)">Удалить</v-btn>
+            </div>
+          </base-material-card>
+        </div>
+        <!--div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('heatmap')">
+          <base-material-card icon="mdi-earth"
+                              title="Тепловая карта">
+            <v-menu :close-on-content-click="false"
+                    :nudge-right="40"
+                    style="background-color: #FFFFFF"
+                    transition="scale-transition"
+                    offset-y>
+              <dashboard-graph-filter :filters="filters"
+                                      :values="values"
+                                      :type="'heatmap'"
+                                      :sendChartFilters="sendChartFilters"
+                                      :computedValues="computedValues"></dashboard-graph-filter>
+              <template v-slot:activator="{ on }">
+                <div class="d-flex justify-space-between">
+                  <v-icon color="success" v-on="on">mdi-settings</v-icon>
+                </div>
+              </template>
+            </v-menu>
+            <apexchart  width="500" type="heatmap" :options="heatChartOptions" :series="series" v-if="showHeat"></apexchart>
+            <div class="d-flex justify-end" v-if="showHeat">
+              <v-btn small color="success" @click="deleteCharts(heatChartData)">Удалить</v-btn>
+            </div>
+          </base-material-card>
+        </div-->
+      </div>
+
     </div>
 
     <div class="py-3" />
@@ -352,6 +519,8 @@
         filters: Object,
         values: Object,
         computedValues: Object,
+        savedData:Object,
+        block:Object,
       },
 
       components: {

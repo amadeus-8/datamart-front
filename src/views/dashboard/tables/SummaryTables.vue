@@ -5,14 +5,14 @@
 
     <div id="savedData" v-if="this.block.savedData">
       <!--dashboard-core-app-bar></dashboard-core-app-bar-->
-      <h1>Saved Data</h1>
+      <h1>Сохраненные данные</h1>
       <base-material-card color="success"
                           icon="mdi-clipboard-text"
                           inline
                           title="Сводная таблица"
                           class="px-5 py-3"
                           v-if="values.view_type.includes('pivot') || values.view_type.length == 0"
-                          v-for="(pivot_table_result,key) in savedData.pivot_table_result">
+                          v-for="(pivot_table_result, key) in savedData.pivot_table_result">
         <div v-if="Object.keys(savedData.pivot_table_result).length > 0">
           <v-simple-table id="pivotTable">
             <template v-slot:default>

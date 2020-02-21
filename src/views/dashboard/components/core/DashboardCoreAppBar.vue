@@ -1,11 +1,11 @@
 <template>
-  <v-app-bar color="transparent"
-             flat
-             height="70"
-             style="width: auto;">
-    <v-toolbar-title class="hidden-sm-and-down" v-text="'Витрина данных'" />
-    <v-spacer />
-  </v-app-bar>
+<!--  <v-app-bar color="transparent"-->
+<!--             flat-->
+<!--             height="70"-->
+<!--             style="width: auto;">-->
+<!--    <v-toolbar-title class="hidden-sm-and-down" v-text="'Витрина данных'" />-->
+<!--    <v-spacer />-->
+<!--  </v-app-bar>-->
 </template>
 
 <script>

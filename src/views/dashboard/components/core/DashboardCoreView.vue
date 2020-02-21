@@ -1,8 +1,10 @@
 <template>
   <v-content>
 
-    <button @click="getSavedData()" class="mr-3" style="color: #4caf50 !important; border: 2px solid #4caf50 !important;">Show SavedData</button>
-    <button @click="block.savedData = false" style="color: #4caf50 !important; border: 2px solid #4caf50 !important;">Show NewData</button>
+    <div class="ml-lg-8 mt-5">
+      <v-btn tile small outlined color="success" @click="getSavedData">Сохраненные данные</v-btn>
+      <v-btn tile small outlined color="success" @click="block.savedData = false">Витрина данных</v-btn>
+    </div>
 
     <dashboard-core-drawer :filters="filters"
                            :values="values"></dashboard-core-drawer>
@@ -256,20 +258,19 @@
     }),
 
     methods: {
-      getSavedData(){
+      getSavedData() {
         this.setLoading(true);
-        if(this.values.view_type.length === 0){
+        if(this.values.view_type.length === 0) {
           this.values.view_type.push('pivot');
         }
-        for(var i=0; i < this.values.view_type.length;i++)
-        {
+        for(var i = 0; i < this.values.view_type.length; i++) {
           var item = this.values.view_type[i];
           axios.post('/get_saved_data',
           {
             type:this.values.view_type[i],
             from_date:this.filters.from_date,
             to_date:this.filters.to_date
-          },item).then(response => {
+          }, item).then(response => {
             if(item === 'pivot') {
               this.setPivotTable(response.data);
             }
@@ -277,7 +278,7 @@
               this.setComparativeTable(response.data);
             }
             if(item !== 'comparative' && item !== 'pivot') {
-              this.setChartOptions(this.values.view_type[i],response.data);
+              this.setChartOptions(this.values.view_type[i], response.data);
             }
             // else if(this.values.view_type[i] === 'line') {
             //   this.setLineChart(response.data);

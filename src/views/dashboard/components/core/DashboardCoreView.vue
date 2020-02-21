@@ -10,7 +10,25 @@
                     :values="values"
                     :computedValues="computedValues"
                     :savedData="savedData"
-                    :block="block"></summary-tables>
+                    :block="block"
+                    :lineChart="lineChart"
+                    :lineChartData="lineChartData"
+                    :areaChartData="areaChartData"
+                    :barChartData="barChartData"
+                    :pieChartData="pieChartData"
+                    :heatChartData="heatChartData"
+                    :lineChartOptions="lineChartOptions"
+                    :areaChartOptions="areaChartOptions"
+                    :barChartOptions="barChartOptions"
+                    :pieChartOptions="pieChartOptions"
+                    :heatChartOptions="heatChartOptions"
+                    :showLine = "showLine"
+                    :showArea = "showArea"
+                    :showBar = "showBar"
+                    :showPie = "showPie"
+                    :showHeat = "showHeat">
+
+    </summary-tables>
     <div class="text-center">
       <v-overlay :z-index="10000" v-show="values.isLoading">
         <v-progress-circular indeterminate size="80"></v-progress-circular>
@@ -31,9 +49,85 @@
     },
 
     data: () => ({
+      lineChart: [],
+      lineChartData: [],
+      areaChartData: [],
+      barChartData: [],
+      pieChartData: [],
+      heatChartData: [],
+      lineChartOptions: {
+        xaxis: {
+          categories: [],
+        }
+      },
+      areaChartOptions: {
+        xaxis: {
+          categories: [],
+        }
+      },
+      barChartOptions: {
+        dataLabels: {
+          enabled: false
+        },
+        xaxis: {
+          categories: [],
+        }
+      },
+      pieChartOptions: {
+        labels: [],
+      },
+      heatChartOptions: {
+        xaxis: {
+          categories: [],
+        }
+      },
+      showLine: {
+        property: false
+      },
+      showArea: {
+        property: false
+      },
+      showBar: {
+        property: false
+      },
+      showPie: {
+        property: false
+      },
+      showHeat: {
+        property: false
+      },
+
       savedData: {
         pivot_table_result: '',
         comparative_table_result: '',
+        lineChartData: [],
+        areaChartData: [],
+        barChartData: [],
+        pieChartData: [],
+        pieChartDatas: [],
+        heatChartData: [],
+        lineChartOptions: [],
+        areaChartOptions: {
+          xaxis: {
+            categories: [],
+          }
+        },
+        barChartOptions: {
+          dataLabels: {
+            enabled: false
+          },
+          xaxis: {
+            categories: [],
+          }
+        },
+        pieChartOptions: {
+          labels: [],
+        },
+        heatChartOptions: {
+          xaxis: {
+            categories: [],
+          }
+        },
       },
       block: {
         savedData: false
@@ -277,7 +371,7 @@
               this.setComparativeTable(response.data);
             }
             if(item !== 'comparative' && item !== 'pivot') {
-              this.setChartOptions(this.values.view_type[i],response.data);
+              this.setChartOptions(item,response.data);
             }
             // else if(this.values.view_type[i] === 'line') {
             //   this.setLineChart(response.data);
@@ -305,8 +399,87 @@
       },
 
       setChartOptions(type, response) {
-        //...
-        this.setLoading(false);
+        var vm = this;
+        switch (type) {
+          case 'line':
+            vm.savedData.lineChartData = [];
+            vm.savedData.lineChartOptions = [];
+            response.forEach(item => {
+              item.series.forEach(items => {
+                  if(items.value === vm.filters.values) vm.savedData.lineChartData.push([items]);
+              });
+              var xaxisData = {
+                xaxis: {
+                  categories: item.xaxis
+                }
+              }
+              this.savedData.lineChartOptions.push(xaxisData);
+            });
+             this.showLine.property = true;
+            this.setLoading(false);
+            break;
+          case 'area':
+            vm.savedData.areaChartData = [];
+            vm.savedData.areaChartOptions = [];
+            response.forEach(item => {
+              item.series.forEach(items => {
+                if(items.value === vm.filters.values) vm.savedData.areaChartData.push([items]);
+              });
+              var xaxisData = {
+                xaxis: {
+                  categories: item.xaxis
+                }
+              }
+              this.savedData.areaChartOptions.push(xaxisData);
+            });
+            this.showArea.property = true;
+            this.setLoading(false);
+            break;
+          case 'bar':
+            vm.savedData.barChartData = [];
+            vm.savedData.barChartOptions = [];
+            response.forEach(item => {
+              item.series.forEach(items => {
+                if(items.value === vm.filters.values) vm.savedData.barChartData.push([items]);
+              });
+              var xaxisData = {
+                dataLabels: {
+                  enabled: false
+                },
+                xaxis: {
+                  categories: item.xaxis
+                }
+              }
+              this.savedData.barChartOptions.push(xaxisData);
+            });
+            this.showBar.property = true;
+            this.setLoading(false);
+            break;
+          case 'pie':
+            // vm.pieChartData.push(response.series[0].data);
+            // this.pieChartDatas.data = response.series[0].data;
+            // // response.series.forEach(item => {
+            // //   if(item.value === vm.filters.values) vm.pieChartData.push(item);
+            // // });
+            // this.pieChartOptions.labels = response.xaxis;
+
+            vm.savedData.pieChartDatas = [];
+            vm.savedData.pieChartOptions = [];
+            response.forEach(item => {
+              item.series.forEach(items => {
+                var data = { data: items.data }
+                if(items.value === vm.filters.values) vm.savedData.pieChartDatas.push(data);
+              });
+              var xaxisData = {  labels: item.xaxis }
+              this.savedData.pieChartOptions.push(xaxisData);
+            });
+
+            this.showPie.property = true;
+            this.setLoading(false);
+            break;
+          default:
+            break;
+        }
       },
       setLoading(value) {
         this.values.isLoading = value;

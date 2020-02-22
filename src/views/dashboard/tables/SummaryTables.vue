@@ -136,30 +136,39 @@
       <div class="d-flex row">
         <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('line') && Object.keys(savedData.lineChartData).length > 0" >
 
-          <base-material-card icon="mdi-earth" title="Линейная диаграмма" v-for="item,key in savedData.lineChartData">
-            <apexchart  width="500" type="line" :options="savedData.lineChartOptions[key]" :series="item" v-if="showLine.property"></apexchart >
-            <!--div class="d-flex justify-end" v-if="showLine.property">
-              <v-btn small color="success" @click="deleteCharts(lineChartData)">Удалить</v-btn>
-            </div-->
-          </base-material-card>
+          <div v-for="item,key in savedData.lineChartData">
+            <base-material-card icon="mdi-earth" title="Линейная диаграмма">
+              <apexchart  width="500" type="line" :options="savedData.lineChartOptions[key]" :series="item" v-if="showLine.property"></apexchart >
+              <!--div class="d-flex justify-end" v-if="showLine.property">
+                <v-btn small color="success" @click="deleteCharts(lineChartData)">Удалить</v-btn>
+              </div-->
+              <div class="mt-3 mb-3 font-weight-bold">Показаны значения - {{ item[0].name }}</div>
+            </base-material-card>
+          </div>
 
         </div>
         <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('area') && Object.keys(savedData.areaChartData).length > 0">
-          <base-material-card icon="mdi-earth" title="Секторная диаграмма" v-for="item,key in savedData.areaChartData">
-            <apexchart  width="500" type="area" :options="savedData.areaChartOptions[key]" :series="item" v-if="showArea.property"></apexchart >
-            <!--div class="d-flex justify-end" v-if="showArea.property">
-              <v-btn small color="success" @click="deleteCharts(areaChartData)">Удалить</v-btn>
-            </div-->
-          </base-material-card>
+          <div v-for="item,key in savedData.areaChartData">
+            <base-material-card icon="mdi-earth" title="Секторная диаграмма">
+              <apexchart  width="500" type="area" :options="savedData.areaChartOptions[key]" :series="item" v-if="showArea.property"></apexchart >
+              <!--div class="d-flex justify-end" v-if="showArea.property">
+                <v-btn small color="success" @click="deleteCharts(areaChartData)">Удалить</v-btn>
+              </div-->
+              <div class="mt-3 mb-3 font-weight-bold">Показаны значения - {{ item[0].name }}</div>
+            </base-material-card>
+          </div>
         </div>
 
         <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('bar') && Object.keys(savedData.barChartData).length > 0">
-          <base-material-card icon="mdi-earth" title="Столбчатая диаграмма" v-for="item,key in savedData.barChartData">
-            <apexchart  width="500" type="bar"  :options="savedData.barChartOptions[key]" :series="item" v-if="showBar.property"></apexchart>
-            <!--div class="d-flex justify-end" v-if="showBar.property">
-              <v-btn small color="success" @click="deleteCharts(barChartData)">Удалить</v-btn>
-            </div-->
-          </base-material-card>
+          <div v-for="item,key in savedData.barChartData">
+            <base-material-card icon="mdi-earth" title="Столбчатая диаграмма" >
+              <apexchart  width="500" type="bar"  :options="savedData.barChartOptions[key]" :series="item" v-if="showBar.property"></apexchart>
+              <!--div class="d-flex justify-end" v-if="showBar.property">
+                <v-btn small color="success" @click="deleteCharts(barChartData)">Удалить</v-btn>
+              </div-->
+              <div class="mt-3 mb-3 font-weight-bold">Показаны значения - {{ item[0].name }}</div>
+            </base-material-card>
+          </div>
         </div>
 
         <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('pie') && Object.keys(savedData.pieChartDatas).length > 0">
@@ -404,10 +413,10 @@
                 </div>
               </template>
             </v-menu>
-            <apexchart  width="500" type="line" :options="lineChartOptions" :series="lineChartData" v-if="showLine.property"></apexchart >
-            <div class="d-flex justify-end" v-if="showLine.property">
+            <apexchart  width="500" type="line" :options="lineChartOptions" :series="lineChartData" v-if="showLine.property && Object.keys(lineChartData).length > 0"></apexchart >
+            <!--div class="d-flex justify-end" v-if="showLine.property">
               <v-btn small color="success" @click="deleteCharts(lineChartData)">Удалить</v-btn>
-            </div>
+            </div-->
           </base-material-card>
         </div>
         <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('area')">
@@ -429,10 +438,10 @@
                 </div>
               </template>
             </v-menu>
-            <apexchart  width="500" type="area" :options="areaChartOptions" :series="areaChartData" v-if="showArea.property"></apexchart >
-            <div class="d-flex justify-end" v-if="showArea.property">
+            <apexchart  width="500" type="area" :options="areaChartOptions" :series="areaChartData" v-if="showArea.property && Object.keys(areaChartData).length > 0"></apexchart >
+            <!--div class="d-flex justify-end" v-if="showArea.property">
               <v-btn small color="success" @click="deleteCharts(areaChartData)">Удалить</v-btn>
-            </div>
+            </div-->
           </base-material-card>
         </div>
         <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('bar')">
@@ -454,10 +463,10 @@
                 </div>
               </template>
             </v-menu>
-            <apexchart  width="500" type="bar"  :options="barChartOptions" :series="barChartData" v-if="showBar.property"></apexchart>
-            <div class="d-flex justify-end" v-if="showBar.property">
+            <apexchart  width="500" type="bar"  :options="barChartOptions" :series="barChartData" v-if="showBar.property && Object.keys(barChartData).length > 0"></apexchart>
+            <!--div class="d-flex justify-end" v-if="showBar.property">
               <v-btn small color="success" @click="deleteCharts(barChartData)">Удалить</v-btn>
-            </div>
+            </div-->
           </base-material-card>
         </div>
         <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('pie')">
@@ -479,10 +488,10 @@
                 </div>
               </template>
             </v-menu>
-            <apexchart  width="500" type="pie" :options="pieChartOptions" :series="pieChartDatas.data" v-if="showPie.property"></apexchart>
-            <div class="d-flex justify-end" v-if="showPie.property">
-              <v-btn small color="success" @click="deleteCharts(pieChartData)">Удалить</v-btn>
-            </div>
+            <apexchart  width="500" type="pie" :options="pieChartOptions" :series="pieChartDatas.data" v-if="showPie.property && pieChartDatas.data != undefined"></apexchart>
+            <!--div class="d-flex justify-end" v-if="showPie.property">
+              <v-btn small color="success" @click="deleteCharts(pieChartDatas,'pie')">Удалить</v-btn>
+            </div-->
           </base-material-card>
         </div>
         <!--div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('heatmap')">
@@ -768,19 +777,34 @@
         sendChartFilters(type) {
           switch(type) {
             case 'line':
-              if(this.lineChartData.length === 3) return;
+              //if(this.lineChartData.length === 3) {
+                this.showLine.property = false;
+              //  return;
+              //}
               break;
             case 'area':
-              if(this.areaChartData.length === 3) return;
+              //if(this.areaChartData.length === 3) {
+                this.showArea.property = false;
+              //  return;
+              //}
               break;
             case 'bar':
-              if(this.barChartData.length === 3) return;
+              //if(this.barChartData.length === 3) {
+                this.showBar.property = false;
+              //  return;
+              //}
               break;
             case 'pie':
-              if(this.pieChartData.length === 3) return;
+              //if(this.pieChartData.length === 3){
+                this.showPie.property = false;
+                //return;
+              //}
               break;
             case 'heat':
-              if(this.heatChartData.length === 3) return;
+              //if(this.heatChartData.length === 3) {
+                this.showHeat.property = false;
+              //  return;
+              //}
               break;
             default:
               break;
@@ -796,7 +820,7 @@
           switch (type) {
             case 'line':
               response.series.forEach(item => {
-                if(item.value === vm.filters.values) vm.lineChartData.push(item);
+                if (item.value === vm.filters.values) vm.lineChartData[0] = item; // push
               });
               this.lineChartOptions.xaxis.categories = response.xaxis;
               this.showLine.property = true;
@@ -804,7 +828,7 @@
               break;
             case 'area':
               response.series.forEach(item => {
-                if(item.value === vm.filters.values) vm.areaChartData.push(item);
+                if (item.value === vm.filters.values) vm.areaChartData[0] = item;  //push
               });
               this.areaChartOptions.xaxis.categories = response.xaxis;
               this.showArea.property = true;
@@ -812,67 +836,62 @@
               break;
             case 'bar':
               response.series.forEach(item => {
-                if(item.value === vm.filters.values) vm.barChartData.push(item);
+                if (item.value === vm.filters.values) vm.barChartData[0] = item;   //push
               });
               this.barChartOptions.xaxis.categories = response.xaxis;
               this.showBar.property = true;
               this.setIsLoading(false);
               break;
             case 'pie':
-              //console.log(response.series[0].data);
-              vm.pieChartData.push(response.series[0].data);
-              this.pieChartDatas.data = response.series[0].data;
               // response.series.forEach(item => {
               //   if(item.value === vm.filters.values) vm.pieChartData.push(item);
               // });
               this.pieChartOptions.labels = response.xaxis;
+              this.pieChartDatas.data = response.series[0].data;
+
               this.showPie.property = true;
               this.setIsLoading(false);
               break;
             case 'heatmap':
-              response.series.forEach(item => {
-                if(item.value === vm.filters.values) vm.heatChartData = item.data;
-              });
-              this.heatChartOptions.xaxis = response.xaxis;
-              this.showHeat.property = true;
-              this.setIsLoading(false);
-              break;
+              // response.series.forEach(item => {
+              //   if(item.value === vm.filters.values) vm.heatChartData = item.data;
+              // });
+              // this.heatChartOptions.xaxis = response.xaxis;
+              // this.showHeat.property = true;
+              // this.setIsLoading(false);
+              // break;
             default:
               break;
           }
         },
 
-        deleteCharts(array) {
-          if(array.length === 1) {
-            if(array === this.lineChartData) {
-              this.showLine.property = false;
-              this.lineChartOptions.xaxis.categories = [];
+        deleteCharts(array,type = null) {
+          if (type == 'pie') {
+            this.showPie.property = false;
+            this.pieChartOptions.labels = [];
+            this.pieChartDatas.data = [];
+          } else {
+            if (array.length === 1) {
+              if (array === this.lineChartData) {
+                this.showLine.property = false;
+                this.lineChartOptions.xaxis.categories = [];
+                array.pop();
+              } else if (array === this.areaChartData) {
+                this.showArea.property = false;
+                this.areaChartOptions.xaxis.categories = [];
+                array.pop();
+              } else if (array === this.barChartData) {
+                this.showBar.property = false;
+                this.barChartData.xaxis.categories = [];
+                array.pop();
+              } else if (array === this.heatChartData) {
+                this.showHeat.property = false;
+                this.heatChartOptions.xaxis.categories = [];
+                array.pop();
+              } else return;
+            } else {
               array.pop();
             }
-            else if(array === this.areaChartData) {
-              this.showArea.property = false;
-              this.areaChartOptions.xaxis.categories = [];
-              array.pop();
-            }
-            else if(array === this.barChartData) {
-              this.showBar.property = false;
-              this.barChartData.xaxis.categories = [];
-              array.pop();
-            }
-            else if(array === this.pieChartData) {
-              this.showPie.property = false;
-              this.pieChartOptions.labels = [];
-              array.pop();
-            }
-            else if(array === this.heatChartData) {
-              this.showHeat.property = false;
-              this.heatChartOptions.xaxis.categories = [];
-              array.pop();
-            }
-            else return;
-          }
-          else {
-            array.pop();
           }
         }
       },

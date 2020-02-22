@@ -2,10 +2,11 @@
   <v-content>
 
     <button @click="getSavedData()" class="mr-3" style="color: #4caf50 !important; border: 2px solid #4caf50 !important;">Show SavedData</button>
-    <button @click="block.savedData = false" style="color: #4caf50 !important; border: 2px solid #4caf50 !important;">Show NewData</button>
+    <button @click="clearSavedData()" style="color: #4caf50 !important; border: 2px solid #4caf50 !important;">Show NewData</button>
 
     <dashboard-core-drawer :filters="filters"
-                           :values="values"></dashboard-core-drawer>
+                           :values="values"
+                            :block="block"></dashboard-core-drawer>
     <summary-tables :filters="filters"
                     :values="values"
                     :computedValues="computedValues"
@@ -122,6 +123,21 @@
         },
         pieChartOptions: {
           labels: [],
+          chart: {
+            width: 380,
+            type: 'pie',
+          },
+          responsive: [{
+            breakpoint: 480,
+            options: {
+              chart: {
+                width: 200
+              },
+              legend: {
+                position: 'bottom'
+              }
+            }
+          }]
         },
         heatChartOptions: {
           xaxis: {
@@ -351,43 +367,58 @@
 
     methods: {
       getSavedData(){
+        var lastElement = this.values.view_type.pop();
+        this.values.view_type = [];
+        this.values.view_type.push(lastElement);
+
         this.setLoading(true);
-        if(this.values.view_type.length === 0){
+        if(this.values.view_type.length === 0 || this.values.view_type[0] === undefined){
           this.values.view_type.push('pivot');
         }
+
         for(var i=0; i < this.values.view_type.length;i++)
         {
-          var item = this.values.view_type[i];
-          axios.post('/get_saved_data',
-          {
-            type:this.values.view_type[i],
-            from_date:this.filters.from_date,
-            to_date:this.filters.to_date
-          },item).then(response => {
-            if(item === 'pivot') {
-              this.setPivotTable(response.data);
-            }
-            if(item === 'comparative') {
-              this.setComparativeTable(response.data);
-            }
-            if(item !== 'comparative' && item !== 'pivot') {
-              this.setChartOptions(item,response.data);
-            }
-            // else if(this.values.view_type[i] === 'line') {
-            //   this.setLineChart(response.data);
-            // } else if(this.values.view_type[i] === 'area') {
-            //   this.setPivotTable(response.data);
-            // } else if(this.values.view_type[i] === 'bar') {
-            //   this.setPivotTable(response.data);
-            // } else if(this.values.view_type[i] === 'pie') {
-            //   this.setPivotTable(response.data);
-            // }
-            this.block.savedData = true;
-          }).catch(error => {
-            alert(error);
-            this.setLoading(false);
-          });
+          var countType = (this.values.view_type.length-1);
+          if(i === countType) {
+            var item = this.values.view_type[i];
+            axios.post('/get_saved_data',
+              {
+                type: this.values.view_type[i],
+                from_date: this.filters.from_date,
+                to_date: this.filters.to_date
+              }, item).then(response => {
+              if (item === 'pivot') {
+                this.setPivotTable(response.data);
+              }
+              if (item === 'comparative') {
+                this.setComparativeTable(response.data);
+              }
+              if (item !== 'comparative' && item !== 'pivot') {
+                this.setChartOptions(item, response.data);
+              }
+              this.block.savedData = true;
+            }).catch(error => {
+              alert(error);
+              this.setLoading(false);
+            });
+          } else {
+            delete this.values.view_type[i];
+          }
         }
+      },
+      clearSavedData(){
+        this.block.savedData = false;
+        this.values.view_type = [];
+        this.savedData.pivot_table_result = '';
+        this.savedData.comparative_table_result = '';
+        this.savedData.lineChartData = [];
+        this.savedData.lineChartOptions = [];
+        this.savedData.areaChartData = [];
+        this.savedData.areaChartOptions = [];
+        this.savedData.barChartData = [];
+        this.savedData.barChartOptions = [];
+        this.savedData.pieChartDatas = [];
+        this.savedData.pieChartOptions = [];
       },
       setPivotTable(response) {
         this.savedData.pivot_table_result = response;
@@ -405,15 +436,17 @@
             vm.savedData.lineChartData = [];
             vm.savedData.lineChartOptions = [];
             response.forEach(item => {
+              var xaxisData = null;
               item.series.forEach(items => {
-                  if(items.value === vm.filters.values) vm.savedData.lineChartData.push([items]);
+                  vm.savedData.lineChartData.push([items]);
               });
-              var xaxisData = {
+
+              xaxisData = {
                 xaxis: {
                   categories: item.xaxis
                 }
               }
-              this.savedData.lineChartOptions.push(xaxisData);
+              vm.savedData.lineChartOptions.push(xaxisData);
             });
              this.showLine.property = true;
             this.setLoading(false);
@@ -423,7 +456,7 @@
             vm.savedData.areaChartOptions = [];
             response.forEach(item => {
               item.series.forEach(items => {
-                if(items.value === vm.filters.values) vm.savedData.areaChartData.push([items]);
+                vm.savedData.areaChartData.push([items]);
               });
               var xaxisData = {
                 xaxis: {
@@ -440,7 +473,7 @@
             vm.savedData.barChartOptions = [];
             response.forEach(item => {
               item.series.forEach(items => {
-                if(items.value === vm.filters.values) vm.savedData.barChartData.push([items]);
+                vm.savedData.barChartData.push([items]);
               });
               var xaxisData = {
                 dataLabels: {
@@ -468,7 +501,7 @@
             response.forEach(item => {
               item.series.forEach(items => {
                 var data = { data: items.data }
-                if(items.value === vm.filters.values) vm.savedData.pieChartDatas.push(data);
+                vm.savedData.pieChartDatas.push(data);
               });
               var xaxisData = {  labels: item.xaxis }
               this.savedData.pieChartOptions.push(xaxisData);

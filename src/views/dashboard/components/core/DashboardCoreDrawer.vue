@@ -92,6 +92,7 @@
                 :items="view_types"
                 item-text="text"
                 item-value="value"
+                @change="selectLeftType"
                 v-model="values.view_type"
                 chips
                 multiple
@@ -121,6 +122,7 @@
     props: {
       filters: Object,
       values: Object,
+      block: Object,
     },
 
     data: () => ({
@@ -301,6 +303,13 @@
       setRegions(response) {
         this.regions = response;
       },
+      selectLeftType(val){
+        if(this.block.savedData){
+          var lastElement = this.values.view_type.pop();
+          this.values.view_type = [];
+          this.values.view_type.push(lastElement);
+        }
+      }
     }
   }
 </script>

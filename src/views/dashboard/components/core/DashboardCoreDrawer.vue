@@ -8,7 +8,7 @@
     <v-list-item two-line>
       <v-list-item-content>
         <v-list-item-title class="text-uppercase font-weight-regular display-2">
-          <span class="logo-normal">Datamart</span>
+          <span class="logo-normal" @click="getUsers()">Datamart</span>
         </v-list-item-title>
       </v-list-item-content>
     </v-list-item>
@@ -123,6 +123,8 @@
       filters: Object,
       values: Object,
       block: Object,
+      getSavedData: Function,
+      getUsers: Function,
     },
 
     data: () => ({
@@ -303,11 +305,12 @@
       setRegions(response) {
         this.regions = response;
       },
-      selectLeftType(val){
+      selectLeftType(val) {
         if(this.block.savedData){
           var lastElement = this.values.view_type.pop();
           this.values.view_type = [];
           this.values.view_type.push(lastElement);
+          this.getSavedData();
         }
       }
     }

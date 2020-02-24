@@ -5,7 +5,7 @@
 
     <div id="savedData" v-if="this.block.savedData">
       <!--dashboard-core-app-bar></dashboard-core-app-bar-->
-      <h1>Saved Data</h1>
+      <h1>Сохраненные данные</h1>
       <base-material-card color="success"
                           icon="mdi-clipboard-text"
                           inline
@@ -269,7 +269,8 @@
     </div>
 
     <div id="newData" v-if="!this.block.savedData">
-      <dashboard-core-app-bar></dashboard-core-app-bar>
+      <!--dashboard-core-app-bar></dashboard-core-app-bar-->
+      <h1>Витрина данных</h1>
       <base-material-card color="success"
                           icon="mdi-clipboard-text"
                           inline

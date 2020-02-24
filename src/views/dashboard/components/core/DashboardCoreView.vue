@@ -2,13 +2,89 @@
   <v-content>
 
     <div class="ml-lg-8 mt-5">
-      <v-btn tile small outlined color="success" @click="getSavedData()">Сохраненные данные</v-btn>
+      <v-btn tile small outlined color="success active" @click="getSavedData()">Сохраненные данные</v-btn>
       <v-btn tile small outlined color="success" @click="clearSavedData()" >Витрина данных</v-btn>
+      <v-btn tile small outlined color="success" @click="getUsers()" >Пользователи</v-btn>
     </div>
+
+    <v-container id="extended-tables" fluid tag="section">
+      <base-material-card color="success" icon="mdi-clipboard-text" inline title="Пользователи" class="px-5 py-3" v-if="usersData.length > 0">
+        <div>
+          <v-row>
+            <v-col cols="12" sm="6" md="3">
+              <v-text-field
+                label="Имя"
+                v-model="userData.name"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" sm="6" md="3">
+              <v-text-field
+                label="Email"
+                v-model="userData.email"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" sm="6" md="3">
+              <v-text-field
+                label="Пароль"
+                v-model="userData.password"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" sm="6" md="3">
+              <v-btn class="mt-5" tile small outlined color="success" @click="addUser()">
+                Сохранить
+              </v-btn>
+            </v-col>
+          </v-row>
+
+          <v-simple-table>
+            <template v-slot:default>
+              <thead>
+                <tr>
+                  <th class="text-left">№</th>
+                  <th class="text-left">Имя</th>
+                  <th class="text-left">Email</th>
+                  <th class="text-left">Статус</th>
+                  <th class="text-center">Действие</th>
+                  <th class="text-center">Удаление</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="u,key in usersData">
+                  <td>{{ key+1 }}</td>
+                  <td>{{ u.name }}</td>
+                  <td>{{ u.email }}</td>
+                  <td>
+                    <span v-if="u.status == 1">Админ</span>
+                    <span v-else>Пользователь</span>
+                  </td>
+                  <td class="text-center">
+                    <v-btn tile small outlined color="success active" v-if="u.status == 1" @click="changeUserStatus(u.id)">
+                      Сделать пользователем
+                    </v-btn>
+                    <v-btn tile small outlined color="success active" v-else @click="changeUserStatus(u.id)">
+                      Сделать админом
+                    </v-btn>
+                  </td>
+                  <td class="text-center">
+                    <v-btn tile small outlined color="error active" @click="deleteUser(u.id)">
+                      Удалить
+                    </v-btn>
+                  </td>
+                </tr>
+              </tbody>
+            </template>
+          </v-simple-table>
+        </div>
+      </base-material-card>
+    </v-container>
+
 
     <dashboard-core-drawer :filters="filters"
                            :values="values"
-                            :block="block"></dashboard-core-drawer>
+                            :block="block"
+                            :getSavedData="getSavedData"
+                            :usersData="usersData"
+                            :getUsers="getUsers"></dashboard-core-drawer>
     <summary-tables :filters="filters"
                     :values="values"
                     :computedValues="computedValues"
@@ -53,11 +129,17 @@
     },
 
     data: () => ({
+      usersData: [],
       lineChart: [],
       lineChartData: [],
       areaChartData: [],
       barChartData: [],
       pieChartData: [],
+      userData: {
+        name: '',
+        email: '',
+        password: '',
+      },
       pieChartDatas: {
         data: '',
         name: '',
@@ -581,6 +663,68 @@
         this.getVehicleFilters();
         this.getClientsStatus();
         this.getAgesCategory();
+      },
+      getUsers(dontClose = null) {
+        if(this.usersData.length === 0 || this.usersData.length !== 0 && dontClose != null) {
+          this.setLoading(true);
+          axios.post('/get_users').then((response) => {
+            if (response.data.success) {
+              this.usersData = response.data.result;
+            } else {
+              alert(response.data.error);
+            }
+            this.setLoading(false);
+          });
+        } else {
+          this.usersData = [];
+        }
+      },
+      addUser() {
+        this.setLoading(true);
+        if(this.userData.name == '' || this.userData.email == '' || this.userData.password == ''){
+          alert('Заполните пожалуйста все поля');
+          this.setLoading(false);
+          return false;
+        }
+        axios.post('/add_user', this.userData).then((response) => {
+          if(response.data.success) {
+            alert('Пользователь успешно добавлен');
+            this.userData.name = '';
+            this.userData.email = '';
+            this.userData.password = '';
+            this.getUsers(1);
+          } else {
+            if(response.data.error != ''){
+              alert(response.data.error);
+              this.setLoading(false);
+            } else {
+              this.setLoading(false);
+              alert('Ошибка! Обратитесь пожалуйста к системному администратору');
+            }
+          }
+        });
+      },
+      changeUserStatus(id) {
+        axios.post('/change_status',{ id:id }).then((response) => {
+          if(response.data.success){
+            this.getUsers(1);
+            alert('Статус успешно сменен');
+          } else {
+            this.setLoading(false);
+            alert('Ошибка');
+          }
+        });
+      },
+      deleteUser(id){
+        axios.post('/delete_user',{ id:id }).then((response) => {
+          if(response.data.success){
+            this.getUsers(1);
+            alert('Пользователь успешно удален');
+          } else {
+            this.setLoading(false);
+            alert('Ошибка удаления');
+          }
+        });
       }
     },
 

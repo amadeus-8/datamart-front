@@ -1,8 +1,10 @@
 <template>
   <v-content>
 
-    <button @click="getSavedData()" class="mr-3" style="color: #4caf50 !important; border: 2px solid #4caf50 !important;">Show SavedData</button>
-    <button @click="clearSavedData()" style="color: #4caf50 !important; border: 2px solid #4caf50 !important;">Show NewData</button>
+    <div class="ml-lg-8 mt-5">
+      <v-btn tile small outlined color="success" @click="getSavedData()">Сохраненные данные</v-btn>
+      <v-btn tile small outlined color="success" @click="clearSavedData()" >Витрина данных</v-btn>
+    </div>
 
     <dashboard-core-drawer :filters="filters"
                            :values="values"

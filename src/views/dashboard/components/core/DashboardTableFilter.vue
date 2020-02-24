@@ -94,17 +94,17 @@
       </v-tab-item>
 
       <v-tab-item :key="2" value="seller">
-        <v-select :items="[{name: 'Все', id: null}].concat(computedValues.sale_channels)"
+        <v-select :items="[{name: 'Все', id: null}].concat(computedValues.sale_centers)"
                   label="Центр продаж"
                   item-text="name"
                   item-value="id"
-                  v-model="filters.sale_channel_id"></v-select>
+                  v-model="filters.sale_center_id"></v-select>
 
-        <v-select :items="[{name: 'Все', id: null}].concat(computedValues.sale_centers)"
+        <v-select :items="[{name: 'Все', id: null}].concat(computedValues.sale_channels)"
                   label="Канал продаж"
                   item-text="name"
                   item-value="id"
-                  v-model="filters.sale_center_id"></v-select>
+                  v-model="filters.sale_channel_id"></v-select>
 
         <v-select :items="[{name: 'Все', id: null}].concat(computedValues.departments)"
                   label="Подразделение"

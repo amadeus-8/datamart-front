@@ -13,8 +13,58 @@
                           class="px-5 py-3"
                           v-if="values.view_type.includes('pivot') || values.view_type.length == 0"
                           v-for="(pivot_table_result,key) in savedData.pivot_table_result">
+
+
+        <v-flex xs12>
+          <v-select :items="computedValues.filter_values"
+                    label="Значения"
+                    item-text="text"
+                    item-value="value"
+                    v-model="filters.values"></v-select>
+        </v-flex>
+
+        <v-menu :close-on-content-click="false"
+                :nudge-right="40"
+                style="background-color: #FFFFFF"
+                transition="scale-transition"
+                offset-y>
+          <dashboard-table-filter :filters="filters"
+                                  :values="values"
+                                  :sendTableFilters="sendTableFilters"
+                                  :type="'pivot'"
+                                  :computedValues="computedValues"></dashboard-table-filter>
+          <template v-slot:activator="{ on }">
+            <div class="d-flex justify-space-between">
+
+              <div class="d-flex">
+                <v-btn v-if="filters.values === 'ogpo_vts_result' ||
+                         filters.values === 'ogpo_vts_count' ||
+                         filters.values === 'vts_cross_result' ||
+                         filters.values === 'avg_cross_result' ||
+                         filters.values === 'vts_overall_sum' ||
+                         filters.values === 'avg_sum'"
+                       small outlined tile
+                       :color="buttonOneIsPressed ? 'success' : 'warning'"
+                       @click="switchTableType('sum')">Сумма</v-btn>
+                <v-btn v-if="filters.values === 'vts_cross_result' ||
+                         filters.values === 'avg_cross_result' ||
+                         filters.values === 'vts_overall_sum' ||
+                         filters.values === 'avg_sum'"
+                       small outlined tile
+                       :color="buttonTwoIsPressed ? 'success' : 'warning'"
+                       @click="switchTableType('avg')">Среднее</v-btn>
+                <v-btn v-if="filters.values === 'ogpo_vts_result' ||
+                         filters.values === 'ogpo_vts_count'"
+                       small outlined tile
+                       :color="buttonThreeIsPressed ? 'success' : 'warning'"
+                       @click="switchTableType('amount')">Количество</v-btn>
+              </div>
+            </div>
+          </template>
+        </v-menu>
+
         <div v-if="Object.keys(savedData.pivot_table_result).length > 0">
-          <v-simple-table id="pivotTable">
+          <v-simple-table :id="'pivotTable-'+key">
             <template v-slot:default>
               <thead>
               <tr>
@@ -54,7 +104,7 @@
             </template>
           </v-simple-table>
           <div class="d-flex justify-end mt-2">
-            <v-btn tile small color="success" @click="exportTableToExcel('pivotTable')">
+            <v-btn tile small color="success" @click="exportTableToExcel('pivotTable-'+key)">
               <v-icon small color="white" class="mr-1">mdi-arrow-down-bold-box-outline</v-icon>
               <span>Скачать</span>
             </v-btn>
@@ -69,8 +119,56 @@
                           class="px-5 py-3 mb-5"
                           v-if="values.view_type.includes('comparative')"
                           v-for="(comparative_table_result,key) in savedData.comparative_table_result">
+
+
+        <v-flex xs12>
+          <v-select :items="computedValues.filter_values"
+                    label="Значения"
+                    item-text="text"
+                    item-value="value"
+                    v-model="filters.values"></v-select>
+        </v-flex>
+        <v-menu :close-on-content-click="false"
+                :nudge-right="40"
+                style="background-color: #FFFFFF"
+                transition="scale-transition"
+                offset-y>
+          <dashboard-table-filter :filters="filters"
+                                  :values="values"
+                                  :sendTableFilters="sendTableFilters"
+                                  :type="'comparative'"
+                                  :computedValues="computedValues"></dashboard-table-filter>
+          <template v-slot:activator="{ on }">
+            <div class="d-flex justify-space-between">
+              <div class="d-flex">
+                <v-btn v-if="filters.values === 'ogpo_vts_result' ||
+                         filters.values === 'ogpo_vts_count' ||
+                         filters.values === 'vts_cross_result' ||
+                         filters.values === 'avg_cross_result' ||
+                         filters.values === 'vts_overall_sum' ||
+                         filters.values === 'avg_sum'"
+                       small outlined tile
+                       :color="buttonOneIsPressed ? 'success' : 'warning'"
+                       @click="switchTableType('sum')">Сумма</v-btn>
+                <v-btn v-if="filters.values === 'vts_cross_result' ||
+                         filters.values === 'avg_cross_result' ||
+                         filters.values === 'vts_overall_sum' ||
+                         filters.values === 'avg_sum'"
+                       small outlined tile
+                       :color="buttonTwoIsPressed ? 'success' : 'warning'"
+                       @click="switchTableType('avg')">Среднее</v-btn>
+                <v-btn v-if="filters.values === 'ogpo_vts_result' ||
+                         filters.values === 'ogpo_vts_count'"
+                       small outlined tile
+                       :color="buttonThreeIsPressed ? 'success' : 'warning'"
+                       @click="switchTableType('amount')">Количество</v-btn>
+              </div>
+            </div>
+          </template>
+        </v-menu>
+
         <div  v-if="Object.keys(savedData.comparative_table_result).length > 0">
-          <v-simple-table id="comparativeTable">
+          <v-simple-table :id="'comparativeTable-'+key">
             <template v-slot:default>
               <thead>
               <tr>
@@ -124,7 +222,7 @@
             </template>
           </v-simple-table>
           <div class="d-flex justify-end mt-2">
-            <v-btn tile small color="success" @click="exportTableToExcel('comparativeTable')">
+            <v-btn tile small color="success" @click="exportTableToExcel('comparativeTable-'+key)">
               <v-icon small color="white" class="mr-1">mdi-arrow-down-bold-box-outline</v-icon>
               <span>Скачать</span>
             </v-btn>
@@ -132,17 +230,13 @@
         </div>
       </base-material-card>
 
-
       <div class="d-flex row">
         <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('line') && Object.keys(savedData.lineChartData).length > 0" >
 
           <div v-for="item,key in savedData.lineChartData">
             <base-material-card icon="mdi-earth" title="Линейная диаграмма">
-              <apexchart  width="500" type="line" :options="savedData.lineChartOptions[key]" :series="item" v-if="showLine.property"></apexchart >
-              <!--div class="d-flex justify-end" v-if="showLine.property">
-                <v-btn small color="success" @click="deleteCharts(lineChartData)">Удалить</v-btn>
-              </div-->
               <div class="mt-3 mb-3 font-weight-bold">Показаны значения - {{ item[0].name }}</div>
+              <apexchart  width="500" type="line" :options="savedData.lineChartOptions[key]" :series="item" v-if="showLine.property"></apexchart >
             </base-material-card>
           </div>
 
@@ -150,11 +244,8 @@
         <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('area') && Object.keys(savedData.areaChartData).length > 0">
           <div v-for="item,key in savedData.areaChartData">
             <base-material-card icon="mdi-earth" title="Секторная диаграмма">
-              <apexchart  width="500" type="area" :options="savedData.areaChartOptions[key]" :series="item" v-if="showArea.property"></apexchart >
-              <!--div class="d-flex justify-end" v-if="showArea.property">
-                <v-btn small color="success" @click="deleteCharts(areaChartData)">Удалить</v-btn>
-              </div-->
               <div class="mt-3 mb-3 font-weight-bold">Показаны значения - {{ item[0].name }}</div>
+              <apexchart  width="500" type="area" :options="savedData.areaChartOptions[key]" :series="item" v-if="showArea.property"></apexchart >
             </base-material-card>
           </div>
         </div>
@@ -162,31 +253,19 @@
         <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('bar') && Object.keys(savedData.barChartData).length > 0">
           <div v-for="item,key in savedData.barChartData">
             <base-material-card icon="mdi-earth" title="Столбчатая диаграмма" >
-              <apexchart  width="500" type="bar"  :options="savedData.barChartOptions[key]" :series="item" v-if="showBar.property"></apexchart>
-              <!--div class="d-flex justify-end" v-if="showBar.property">
-                <v-btn small color="success" @click="deleteCharts(barChartData)">Удалить</v-btn>
-              </div-->
               <div class="mt-3 mb-3 font-weight-bold">Показаны значения - {{ item[0].name }}</div>
+              <apexchart  width="500" type="bar"  :options="savedData.barChartOptions[key]" :series="item" v-if="showBar.property"></apexchart>
             </base-material-card>
           </div>
         </div>
 
         <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('pie') && Object.keys(savedData.pieChartDatas).length > 0">
           <base-material-card icon="mdi-earth" title="Круговая диаграмма" v-for="item,key in savedData.pieChartDatas">
-
+            <div class="mt-3 mb-3 font-weight-bold">Показаны значения - {{ item.name }}</div>
             <apexchart  width="500" type="pie" :options="savedData.pieChartOptions[key]" :series="item.data" v-if="showPie.property"></apexchart>
-            <!--div class="d-flex justify-end" v-if="showPie.property">
-              <v-btn small color="success" @click="deleteCharts(pieChartData)">Удалить</v-btn>
-            </div-->
           </base-material-card>
         </div>
       </div>
-
-
-
-
-
-
     </div>
 
     <div id="newData" v-if="!this.block.savedData">
@@ -197,6 +276,14 @@
                           title="Сводная таблица"
                           class="px-5 py-3"
                           v-if="values.view_type.includes('pivot')">
+        <v-flex xs12>
+          <v-select :items="computedValues.filter_values"
+                    label="Значения"
+                    item-text="text"
+                    item-value="value"
+                    v-model="filters.values"
+                    v-if="Object.keys(pivot_table_result).length > 0"></v-select>
+        </v-flex>
         <v-menu :close-on-content-click="false"
                 :nudge-right="40"
                 style="background-color: #FFFFFF"
@@ -242,7 +329,7 @@
               <thead>
               <tr>
                 <th class="text-left">{{ pivot_table_result.property }}</th>
-                <th v-for="(item) in pivot_table_result.labels" v-if="pivot_table_result.labels.length > 1">{{ item }}</th>
+                <th v-for="(item) in pivot_table_result.labels" v-if="pivot_table_result.labels.length > 0">{{ item }}</th>
                 <th v-else>
                   <span v-if="filters.values === 'ogpo_vts_result' || filters.values === 'ogpo_vts_count'">Премия ОС ГПО ВТС</span>
                   <span v-if="filters.values === 'vts_cross_result' || filters.values === 'avg_cross_result'">Премии др.продукты (Кросс + доброволки)</span>
@@ -291,6 +378,14 @@
                           title="Сравнительная таблица"
                           class="px-5 py-3 mb-5"
                           v-if="values.view_type.includes('comparative')">
+        <v-flex xs12>
+          <v-select :items="computedValues.filter_values"
+                    label="Значения"
+                    item-text="text"
+                    item-value="value"
+                    v-model="filters.values"
+                    v-if="Object.keys(comparative_table_result).length > 0"></v-select>
+        </v-flex>
         <v-menu :close-on-content-click="false"
                 :nudge-right="40"
                 style="background-color: #FFFFFF"
@@ -413,6 +508,7 @@
                 </div>
               </template>
             </v-menu>
+            <div class="mt-3 mb-3 font-weight-bold" v-if="showLine.property && Object.keys(lineChartData).length > 0">Показаны значения - {{ lineChartData[0].name }}</div>
             <apexchart  width="500" type="line" :options="lineChartOptions" :series="lineChartData" v-if="showLine.property && Object.keys(lineChartData).length > 0"></apexchart >
             <!--div class="d-flex justify-end" v-if="showLine.property">
               <v-btn small color="success" @click="deleteCharts(lineChartData)">Удалить</v-btn>
@@ -438,6 +534,7 @@
                 </div>
               </template>
             </v-menu>
+            <div class="mt-3 mb-3 font-weight-bold" v-if="showArea.property && Object.keys(areaChartData).length > 0">Показаны значения - {{ areaChartData[0].name }}</div>
             <apexchart  width="500" type="area" :options="areaChartOptions" :series="areaChartData" v-if="showArea.property && Object.keys(areaChartData).length > 0"></apexchart >
             <!--div class="d-flex justify-end" v-if="showArea.property">
               <v-btn small color="success" @click="deleteCharts(areaChartData)">Удалить</v-btn>
@@ -463,6 +560,7 @@
                 </div>
               </template>
             </v-menu>
+            <div class="mt-3 mb-3 font-weight-bold" v-if="showBar.property && Object.keys(barChartData).length > 0">Показаны значения - {{ barChartData[0].name }}</div>
             <apexchart  width="500" type="bar"  :options="barChartOptions" :series="barChartData" v-if="showBar.property && Object.keys(barChartData).length > 0"></apexchart>
             <!--div class="d-flex justify-end" v-if="showBar.property">
               <v-btn small color="success" @click="deleteCharts(barChartData)">Удалить</v-btn>
@@ -488,6 +586,7 @@
                 </div>
               </template>
             </v-menu>
+            <div class="mt-3 mb-3 font-weight-bold" v-if="showPie.property && pieChartDatas.data != undefined">Показаны значения - {{ pieChartDatas.name }}</div>
             <apexchart  width="500" type="pie" :options="pieChartOptions" :series="pieChartDatas.data" v-if="showPie.property && pieChartDatas.data != undefined"></apexchart>
             <!--div class="d-flex justify-end" v-if="showPie.property">
               <v-btn small color="success" @click="deleteCharts(pieChartDatas,'pie')">Удалить</v-btn>
@@ -553,6 +652,7 @@
         areaChartOptions: Object,
         barChartOptions: Object,
         pieChartOptions: Object,
+        pieChartDatas: Object,
         heatChartOptions: Object,
         showLine: Object,
         showArea: Object,
@@ -569,9 +669,6 @@
       },
 
       data: () => ({
-        pieChartDatas:{
-          data:null
-        },
         series: [2, 4, 1, 2, 1, 1],
 
         comparative_table_result: [],
@@ -848,7 +945,7 @@
               // });
               this.pieChartOptions.labels = response.xaxis;
               this.pieChartDatas.data = response.series[0].data;
-
+              this.pieChartDatas.name = response.series[0].name;
               this.showPie.property = true;
               this.setIsLoading(false);
               break;

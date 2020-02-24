@@ -17,6 +17,7 @@
                     :areaChartData="areaChartData"
                     :barChartData="barChartData"
                     :pieChartData="pieChartData"
+                    :pieChartDatas="pieChartDatas"
                     :heatChartData="heatChartData"
                     :lineChartOptions="lineChartOptions"
                     :areaChartOptions="areaChartOptions"
@@ -55,6 +56,10 @@
       areaChartData: [],
       barChartData: [],
       pieChartData: [],
+      pieChartDatas: {
+        data: '',
+        name: '',
+      },
       heatChartData: [],
       lineChartOptions: {
         xaxis: {
@@ -124,7 +129,7 @@
         pieChartOptions: {
           labels: [],
           chart: {
-            width: 380,
+            //width: 380,
             type: 'pie',
           },
           responsive: [{
@@ -489,18 +494,14 @@
             this.setLoading(false);
             break;
           case 'pie':
-            // vm.pieChartData.push(response.series[0].data);
-            // this.pieChartDatas.data = response.series[0].data;
-            // // response.series.forEach(item => {
-            // //   if(item.value === vm.filters.values) vm.pieChartData.push(item);
-            // // });
-            // this.pieChartOptions.labels = response.xaxis;
-
             vm.savedData.pieChartDatas = [];
             vm.savedData.pieChartOptions = [];
             response.forEach(item => {
               item.series.forEach(items => {
-                var data = { data: items.data }
+                var data = {
+                  data: items.data,
+                  name: items.name
+                }
                 vm.savedData.pieChartDatas.push(data);
               });
               var xaxisData = {  labels: item.xaxis }

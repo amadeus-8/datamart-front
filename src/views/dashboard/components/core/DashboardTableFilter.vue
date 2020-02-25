@@ -120,7 +120,7 @@
       </v-tab-item>
     </v-tabs-items>
     <div class="d-flex justify-center">
-      <v-btn small tile color="success" @click="sendTableFilters(type)">Применить</v-btn>
+      <v-btn small tile color="success" @click="sendTableFilters(type,id)">Применить</v-btn>
     </div>
   </div>
 </template>
@@ -132,6 +132,7 @@
     props: {
       filters: Object,
       values: Object,
+      id: Number,
       computedValues: Object,
       sendTableFilters: Function,
       type: String,

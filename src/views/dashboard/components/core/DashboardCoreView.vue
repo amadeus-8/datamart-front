@@ -7,78 +7,6 @@
       <v-btn tile small outlined color="success" @click="getUsers()" >Пользователи</v-btn>
     </div>
 
-    <v-container id="extended-tables" fluid tag="section">
-      <base-material-card color="success" icon="mdi-clipboard-text" inline title="Пользователи" class="px-5 py-3" v-if="usersData.length > 0">
-        <div>
-          <v-row>
-            <v-col cols="12" sm="6" md="3">
-              <v-text-field
-                label="Имя"
-                v-model="userData.name"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="12" sm="6" md="3">
-              <v-text-field
-                label="Email"
-                v-model="userData.email"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="12" sm="6" md="3">
-              <v-text-field
-                label="Пароль"
-                v-model="userData.password"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="12" sm="6" md="3">
-              <v-btn class="mt-5" tile small outlined color="success" @click="addUser()">
-                Сохранить
-              </v-btn>
-            </v-col>
-          </v-row>
-
-          <v-simple-table>
-            <template v-slot:default>
-              <thead>
-                <tr>
-                  <th class="text-left">№</th>
-                  <th class="text-left">Имя</th>
-                  <th class="text-left">Email</th>
-                  <th class="text-left">Статус</th>
-                  <th class="text-center">Действие</th>
-                  <th class="text-center">Удаление</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="u,key in usersData">
-                  <td>{{ key+1 }}</td>
-                  <td>{{ u.name }}</td>
-                  <td>{{ u.email }}</td>
-                  <td>
-                    <span v-if="u.status == 1">Админ</span>
-                    <span v-else>Пользователь</span>
-                  </td>
-                  <td class="text-center">
-                    <v-btn tile small outlined color="success active" v-if="u.status == 1" @click="changeUserStatus(u.id)">
-                      Сделать пользователем
-                    </v-btn>
-                    <v-btn tile small outlined color="success active" v-else @click="changeUserStatus(u.id)">
-                      Сделать админом
-                    </v-btn>
-                  </td>
-                  <td class="text-center">
-                    <v-btn tile small outlined color="error active" @click="deleteUser(u.id)">
-                      Удалить
-                    </v-btn>
-                  </td>
-                </tr>
-              </tbody>
-            </template>
-          </v-simple-table>
-        </div>
-      </base-material-card>
-    </v-container>
-
-
     <dashboard-core-drawer :filters="filters"
                            :values="values"
                             :block="block"
@@ -90,7 +18,6 @@
                     :computedValues="computedValues"
                     :savedData="savedData"
                     :block="block"
-                    :lineChart="lineChart"
                     :lineChartData="lineChartData"
                     :areaChartData="areaChartData"
                     :barChartData="barChartData"
@@ -106,7 +33,18 @@
                     :showArea = "showArea"
                     :showBar = "showBar"
                     :showPie = "showPie"
-                    :showHeat = "showHeat">
+                    :showHeat = "showHeat"
+                    :comparative_table_results="comparative_table_results"
+                    :pivot_table_results="pivot_table_results"
+                    :lineCharts="lineCharts"
+                    :areaCharts="areaCharts"
+                    :barCharts="barCharts"
+                    :pieCharts="pieCharts"
+                    :usersData="usersData"
+                    :userData="userData"
+                    :addUser="addUser"
+                    :changeUserStatus="changeUserStatus"
+                    :deleteUser="deleteUser">
 
     </summary-tables>
     <div class="text-center">
@@ -129,8 +67,55 @@
     },
 
     data: () => ({
+      pivot_table_results: [{
+        pivot_table_result: []
+      }],
+      comparative_table_results: [{
+        comparative_table_result: []
+      }],
+      lineCharts: [{
+        lineChartData: [],
+        lineChartOptions: {
+          xaxis: {
+            categories: [],
+          }
+        },
+      }],
+      areaCharts: [{
+        areaChartData: [],
+        areaChartOptions: {
+          xaxis: {
+            categories: [],
+          }
+        },
+      }],
+      barCharts: [{
+        barChartData: [],
+        barChartOptions: {
+          dataLabels: {
+            enabled: false
+          },
+          xaxis: {
+            categories: [],
+          }
+        },
+      }],
+      pieCharts: [{
+        pieChartDatas: {
+          data: '',
+          name: '',
+        },
+        pieChartOptions: {
+          labels: [],
+        },
+      }],
       usersData: [],
-      lineChart: [],
+
+      lineChartOptions: {
+        xaxis: {
+          categories: [],
+        }
+      },
       lineChartData: [],
       areaChartData: [],
       barChartData: [],
@@ -145,11 +130,6 @@
         name: '',
       },
       heatChartData: [],
-      lineChartOptions: {
-        xaxis: {
-          categories: [],
-        }
-      },
       areaChartOptions: {
         xaxis: {
           categories: [],

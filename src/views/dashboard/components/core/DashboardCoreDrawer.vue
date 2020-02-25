@@ -306,7 +306,7 @@
         this.regions = response;
       },
       selectLeftType(val) {
-        if(this.block.savedData){
+        if(this.block.savedData){   // Если мы смотрим сохраненные данные
           var lastElement = this.values.view_type.pop();
           this.values.view_type = [];
           this.values.view_type.push(lastElement);

@@ -3,8 +3,77 @@
                fluid
                tag="section">
 
+
+    <base-material-card color="success" icon="mdi-clipboard-text" inline title="Пользователи" class="px-5 py-3" v-if="usersData.length > 0">
+      <div>
+        <v-row>
+          <v-col cols="12" sm="6" md="3">
+            <v-text-field
+              label="Имя"
+              v-model="userData.name"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12" sm="6" md="3">
+            <v-text-field
+              label="Email"
+              v-model="userData.email"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12" sm="6" md="3">
+            <v-text-field
+              label="Пароль"
+              v-model="userData.password"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12" sm="6" md="3">
+            <v-btn class="mt-5" tile small outlined color="success" @click="addUser()">
+              Сохранить
+            </v-btn>
+          </v-col>
+        </v-row>
+
+        <v-simple-table>
+          <template v-slot:default>
+            <thead>
+            <tr>
+              <th class="text-left">№</th>
+              <th class="text-left">Имя</th>
+              <th class="text-left">Email</th>
+              <th class="text-left">Статус</th>
+              <th class="text-center">Действие</th>
+              <th class="text-center">Удаление</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="u,key in usersData">
+              <td>{{ key+1 }}</td>
+              <td>{{ u.name }}</td>
+              <td>{{ u.email }}</td>
+              <td>
+                <span v-if="u.status == 1">Админ</span>
+                <span v-else>Пользователь</span>
+              </td>
+              <td class="text-center">
+                <v-btn tile small outlined color="success active" v-if="u.status == 1" @click="changeUserStatus(u.id)">
+                  Сделать пользователем
+                </v-btn>
+                <v-btn tile small outlined color="success active" v-else @click="changeUserStatus(u.id)">
+                  Сделать админом
+                </v-btn>
+              </td>
+              <td class="text-center">
+                <v-btn tile small outlined color="error active" @click="deleteUser(u.id)">
+                  Удалить
+                </v-btn>
+              </td>
+            </tr>
+            </tbody>
+          </template>
+        </v-simple-table>
+      </div>
+    </base-material-card>
+
     <div id="savedData" v-if="this.block.savedData">
-      <!--dashboard-core-app-bar></dashboard-core-app-bar-->
       <h1>Сохраненные данные</h1>
       <base-material-card color="success"
                           icon="mdi-clipboard-text"
@@ -104,7 +173,7 @@
             </template>
           </v-simple-table>
           <div class="d-flex justify-end mt-2">
-            <v-btn tile small color="success" @click="exportTableToExcel('pivotTable-'+key)">
+            <v-btn tile small color="success" class="mr-0" @click="exportTableToExcel('pivotTable-'+key)">
               <v-icon small color="white" class="mr-1">mdi-arrow-down-bold-box-outline</v-icon>
               <span>Скачать</span>
             </v-btn>
@@ -222,7 +291,7 @@
             </template>
           </v-simple-table>
           <div class="d-flex justify-end mt-2">
-            <v-btn tile small color="success" @click="exportTableToExcel('comparativeTable-'+key)">
+            <v-btn tile small color="success" class="mr-0" @click="exportTableToExcel('comparativeTable-'+key)">
               <v-icon small color="white" class="mr-1">mdi-arrow-down-bold-box-outline</v-icon>
               <span>Скачать</span>
             </v-btn>
@@ -232,15 +301,14 @@
 
       <div class="d-flex row">
         <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('line') && Object.keys(savedData.lineChartData).length > 0" >
-
           <div v-for="item,key in savedData.lineChartData">
             <base-material-card icon="mdi-earth" title="Линейная диаграмма">
               <div class="mt-3 mb-3 font-weight-bold">Показаны значения - {{ item[0].name }}</div>
               <apexchart  width="500" type="line" :options="savedData.lineChartOptions[key]" :series="item" v-if="showLine.property"></apexchart >
             </base-material-card>
           </div>
-
         </div>
+
         <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('area') && Object.keys(savedData.areaChartData).length > 0">
           <div v-for="item,key in savedData.areaChartData">
             <base-material-card icon="mdi-earth" title="Секторная диаграмма">
@@ -269,21 +337,21 @@
     </div>
 
     <div id="newData" v-if="!this.block.savedData">
-      <!--dashboard-core-app-bar></dashboard-core-app-bar-->
       <h1>Витрина данных</h1>
-      <base-material-card color="success"
-                          icon="mdi-clipboard-text"
-                          inline
-                          title="Сводная таблица"
-                          class="px-5 py-3"
-                          v-if="values.view_type.includes('pivot')">
+
+      <v-btn tile small outlined color="success" v-for="key in values.view_type" class="mt-3" @click="addView(key)" >
+        Добавить {{ getFilterTypeTitle[key] }}
+      </v-btn>
+
+      <base-material-card color="success" icon="mdi-clipboard-text" inline title="Сводная таблица" class="px-5 py-3" v-if="values.view_type.includes('pivot')" v-for="items,key in pivot_table_results">
         <v-flex xs12>
           <v-select :items="computedValues.filter_values"
                     label="Значения"
                     item-text="text"
                     item-value="value"
                     v-model="filters.values"
-                    v-if="Object.keys(pivot_table_result).length > 0"></v-select>
+                    v-if="Object.keys(items.pivot_table_result).length > 0">
+          </v-select>
         </v-flex>
         <v-menu :close-on-content-click="false"
                 :nudge-right="40"
@@ -294,7 +362,9 @@
                                   :values="values"
                                   :sendTableFilters="sendTableFilters"
                                   :type="'pivot'"
-                                  :computedValues="computedValues"></dashboard-table-filter>
+                                  :id="key"
+                                  :computedValues="computedValues">
+          </dashboard-table-filter>
           <template v-slot:activator="{ on }">
             <div class="d-flex justify-space-between">
               <v-icon color="success" v-on="on" @click="changeType('pivot')">mdi-settings</v-icon>
@@ -324,13 +394,13 @@
             </div>
           </template>
         </v-menu>
-        <div v-if="Object.keys(pivot_table_result).length > 0">
-          <v-simple-table id="pivotTable">
+        <div v-if="Object.keys(items.pivot_table_result).length > 0">
+          <v-simple-table :id="'pivotTable-'+key">
             <template v-slot:default>
               <thead>
               <tr>
-                <th class="text-left">{{ pivot_table_result.property }}</th>
-                <th v-for="(item) in pivot_table_result.labels" v-if="pivot_table_result.labels.length > 0">{{ item }}</th>
+                <th class="text-left">{{ items.pivot_table_result.property }}</th>
+                <th v-for="(item) in items.pivot_table_result.labels" v-if="items.pivot_table_result.labels.length > 0">{{ item }}</th>
                 <th v-else>
                   <span v-if="filters.values === 'ogpo_vts_result' || filters.values === 'ogpo_vts_count'">Премия ОС ГПО ВТС</span>
                   <span v-if="filters.values === 'vts_cross_result' || filters.values === 'avg_cross_result'">Премии др.продукты (Кросс + доброволки)</span>
@@ -352,7 +422,7 @@
               </tr>
               </thead>
               <tbody>
-              <tr v-for="(item, key) in pivot_table_result.data">
+              <tr v-for="(item, key) in items.pivot_table_result.data">
                 <td>{{ key }}</td>
                 <td v-for="items in item" >
                     <span v-for="(i, k) in items" v-if="k == filters.values">
@@ -365,12 +435,17 @@
             </template>
           </v-simple-table>
           <div class="d-flex justify-end mt-2">
-            <v-btn tile small color="success" @click="exportTableToExcel('pivotTable')">
+            <v-btn tile small color="success" class="mr-0" @click="exportTableToExcel('pivotTable-'+key)">
               <v-icon small color="white" class="mr-1">mdi-arrow-down-bold-box-outline</v-icon>
               <span>Скачать</span>
             </v-btn>
           </div>
         </div>
+
+        <div class="d-flex justify-end mt-2 pr-0">
+          <v-btn small color="success" class="mr-0" @click="deleteView('pivot',key)">Удалить</v-btn>
+        </div>
+
       </base-material-card>
 
       <base-material-card color="success"
@@ -378,14 +453,15 @@
                           inline
                           title="Сравнительная таблица"
                           class="px-5 py-3 mb-5"
-                          v-if="values.view_type.includes('comparative')">
+                          v-if="values.view_type.includes('comparative')"
+                          v-for="items,key in comparative_table_results">
         <v-flex xs12>
           <v-select :items="computedValues.filter_values"
                     label="Значения"
                     item-text="text"
                     item-value="value"
                     v-model="filters.values"
-                    v-if="Object.keys(comparative_table_result).length > 0"></v-select>
+                    v-if="Object.keys(items.comparative_table_result).length > 0"></v-select>
         </v-flex>
         <v-menu :close-on-content-click="false"
                 :nudge-right="40"
@@ -396,6 +472,7 @@
                                   :values="values"
                                   :sendTableFilters="sendTableFilters"
                                   :type="'comparative'"
+                                  :id="key"
                                   :computedValues="computedValues"></dashboard-table-filter>
           <template v-slot:activator="{ on }">
             <div class="d-flex justify-space-between">
@@ -426,17 +503,17 @@
             </div>
           </template>
         </v-menu>
-        <div v-if="Object.keys(comparative_table_result).length > 0">
-          <v-simple-table id="comparativeTable">
+        <div v-if="Object.keys(items.comparative_table_result).length > 0">
+          <v-simple-table :id="'comparativeTable-'+key">
             <template v-slot:default>
               <thead>
               <tr>
-                <th class="text-left">{{ comparative_table_result.property }}</th>
-                <th v-for="(item) in comparative_table_result.labels">{{ item }}</th>
+                <th class="text-left">{{ items.comparative_table_result.property }}</th>
+                <th v-for="(item) in items.comparative_table_result.labels">{{ item }}</th>
               </tr>
               </thead>
               <tbody>
-              <tr v-for="(item, key) in comparative_table_result.data">
+              <tr v-for="(item, key) in items.comparative_table_result.data">
                 <td>{{ key }}</td>
                 <td v-for="(item, index) in item[0]" v-if="index == filters.values">
                   <span v-if="item == null">0</span>
@@ -458,21 +535,21 @@
               </tr>
               <tr>
                 <td>Общий итог</td>
-                <td v-for="(item,key) in comparative_table_result.bottomData[0]" v-if="key == filters.values">
+                <td v-for="(item,key) in items.comparative_table_result.bottomData[0]" v-if="key == filters.values">
                   <span v-if="item == null">0</span>
                   <span v-else>{{ item.toLocaleString() }}</span>
                 </td>
                 <td>
                   100%
                 </td>
-                <td v-for="(item,key) in comparative_table_result.bottomData[1]" v-if="key == filters.values">
+                <td v-for="(item,key) in items.comparative_table_result.bottomData[1]" v-if="key == filters.values">
                   <span v-if="item == null">0</span>
                   <span v-else>{{ item.toLocaleString() }}</span>
                 </td>
                 <td>
                   100%
                 </td>
-                <td v-for="(item,key) in comparative_table_result.bottomData[2]" v-if="key == filters.values">
+                <td v-for="(item,key) in items.comparative_table_result.bottomData[2]" v-if="key == filters.values">
                   <span v-if="item == null">0</span>
                   <span v-else>{{ item.toLocaleString() }}%</span>
                 </td>
@@ -481,44 +558,51 @@
             </template>
           </v-simple-table>
           <div class="d-flex justify-end mt-2">
-            <v-btn tile small color="success" @click="exportTableToExcel('comparativeTable')">
+            <v-btn tile small color="success" class="mr-0" @click="exportTableToExcel('comparativeTable-'+key)">
               <v-icon small color="white" class="mr-1">mdi-arrow-down-bold-box-outline</v-icon>
               <span>Скачать</span>
             </v-btn>
           </div>
         </div>
+
+        <div class="d-flex justify-end mt-2 pr-0">
+          <v-btn small color="success" class="mr-0" @click="deleteView('comparative',key)">Удалить</v-btn>
+        </div>
+
       </base-material-card>
 
       <div class="d-flex row">
-        <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('line')">
-          <base-material-card icon="mdi-earth"
-                              title="Линейная диаграмма">
-            <v-menu :close-on-content-click="false"
-                    :nudge-right="40"
-                    style="background-color: #FFFFFF"
-                    transition="scale-transition"
-                    offset-y>
-              <dashboard-graph-filter :filters="filters"
-                                      :values="values"
-                                      :type="'line'"
-                                      :sendChartFilters="sendChartFilters"
-                                      :computedValues="computedValues"></dashboard-graph-filter>
+        <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('line')" v-for="items,key in lineCharts">
+          <base-material-card icon="mdi-earth" title="Линейная диаграмма">
+            <v-menu :close-on-content-click="false" :nudge-right="40" style="background-color: #FFFFFF" transition="scale-transition" offset-y>
+              <dashboard-graph-filter
+                :filters="filters"
+                :values="values"
+                :type="'line'"
+                :id="key"
+                :sendChartFilters="sendChartFilters"
+                :computedValues="computedValues">
+              </dashboard-graph-filter>
               <template v-slot:activator="{ on }">
                 <div class="d-flex justify-space-between">
                   <v-icon color="success" v-on="on" @click="changeType('line')">mdi-settings</v-icon>
                 </div>
               </template>
             </v-menu>
-            <div class="mt-3 mb-3 font-weight-bold" v-if="showLine.property && Object.keys(lineChartData).length > 0">Показаны значения - {{ lineChartData[0].name }}</div>
-            <apexchart  width="500" type="line" :options="lineChartOptions" :series="lineChartData" v-if="showLine.property && Object.keys(lineChartData).length > 0"></apexchart >
-            <!--div class="d-flex justify-end" v-if="showLine.property">
-              <v-btn small color="success" @click="deleteCharts(lineChartData)">Удалить</v-btn>
-            </div-->
+            <div class="mt-3 mb-3 font-weight-bold" v-if="showLine.property && Object.keys(items.lineChartData).length > 0">
+              Показаны значения - {{ items.lineChartData[0].name }}
+            </div>
+            <apexchart  width="500" type="line" :options="items.lineChartOptions" :series="items.lineChartData" v-if="showLine.property && Object.keys(items.lineChartData).length > 0">
+            </apexchart >
+
+            <div class="d-flex justify-end mt-2 pr-0">
+              <v-btn small color="success" class="mr-0" @click="deleteView('line',key)">Удалить</v-btn>
+            </div>
+
           </base-material-card>
         </div>
-        <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('area')">
-          <base-material-card icon="mdi-earth"
-                              title="Секторная диаграмма">
+        <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('area')" v-for="items,key in areaCharts">
+          <base-material-card icon="mdi-earth" title="Секторная диаграмма">
             <v-menu :close-on-content-click="false"
                     :nudge-right="40"
                     style="background-color: #FFFFFF"
@@ -527,6 +611,7 @@
               <dashboard-graph-filter :filters="filters"
                                       :values="values"
                                       :type="'area'"
+                                      :id="key"
                                       :sendChartFilters="sendChartFilters"
                                       :computedValues="computedValues"></dashboard-graph-filter>
               <template v-slot:activator="{ on }">
@@ -535,16 +620,15 @@
                 </div>
               </template>
             </v-menu>
-            <div class="mt-3 mb-3 font-weight-bold" v-if="showArea.property && Object.keys(areaChartData).length > 0">Показаны значения - {{ areaChartData[0].name }}</div>
-            <apexchart  width="500" type="area" :options="areaChartOptions" :series="areaChartData" v-if="showArea.property && Object.keys(areaChartData).length > 0"></apexchart >
-            <!--div class="d-flex justify-end" v-if="showArea.property">
-              <v-btn small color="success" @click="deleteCharts(areaChartData)">Удалить</v-btn>
-            </div-->
+            <div class="mt-3 mb-3 font-weight-bold" v-if="showArea.property && Object.keys(items.areaChartData).length > 0">Показаны значения - {{ items.areaChartData[0].name }}</div>
+            <apexchart  width="500" type="area" :options="items.areaChartOptions" :series="items.areaChartData" v-if="showArea.property && Object.keys(items.areaChartData).length > 0"></apexchart >
+            <div class="d-flex justify-end mt-2 pr-0">
+              <v-btn small color="success" class="mr-0" @click="deleteView('area',key)">Удалить</v-btn>
+            </div>
           </base-material-card>
         </div>
-        <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('bar')">
-          <base-material-card icon="mdi-earth"
-                              title="Столбчатая диаграмма">
+        <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('bar')" v-for="items,key in barCharts">
+          <base-material-card icon="mdi-earth" title="Столбчатая диаграмма">
             <v-menu :close-on-content-click="false"
                     :nudge-right="40"
                     style="background-color: #FFFFFF"
@@ -553,6 +637,7 @@
               <dashboard-graph-filter :filters="filters"
                                       :values="values"
                                       :type="'bar'"
+                                      :id="key"
                                       :sendChartFilters="sendChartFilters"
                                       :computedValues="computedValues"></dashboard-graph-filter>
               <template v-slot:activator="{ on }">
@@ -561,16 +646,17 @@
                 </div>
               </template>
             </v-menu>
-            <div class="mt-3 mb-3 font-weight-bold" v-if="showBar.property && Object.keys(barChartData).length > 0">Показаны значения - {{ barChartData[0].name }}</div>
-            <apexchart  width="500" type="bar"  :options="barChartOptions" :series="barChartData" v-if="showBar.property && Object.keys(barChartData).length > 0"></apexchart>
-            <!--div class="d-flex justify-end" v-if="showBar.property">
-              <v-btn small color="success" @click="deleteCharts(barChartData)">Удалить</v-btn>
-            </div-->
+            <div class="mt-3 mb-3 font-weight-bold" v-if="showBar.property && Object.keys(items.barChartData).length > 0">
+              Показаны значения - {{ items.barChartData[0].name }}
+            </div>
+            <apexchart  width="500" type="bar"  :options="items.barChartOptions" :series="items.barChartData" v-if="showBar.property && Object.keys(items.barChartData).length > 0"></apexchart>
+            <div class="d-flex justify-end mt-2 pr-0">
+              <v-btn small color="success" class="mr-0" @click="deleteView('bar',key)">Удалить</v-btn>
+            </div>
           </base-material-card>
         </div>
-        <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('pie')">
-          <base-material-card icon="mdi-earth"
-                              title="Круговая диаграмма">
+        <div class="ml-4 mr-4 pt-2 pb-2">
+          <base-material-card icon="mdi-earth" title="Круговая диаграмма" v-if="values.view_type.includes('pie')"  v-for="items,key in pieCharts">
             <v-menu :close-on-content-click="false"
                     :nudge-right="40"
                     style="background-color: #FFFFFF"
@@ -579,46 +665,23 @@
               <dashboard-graph-filter :filters="filters"
                                       :values="values"
                                       :type="'pie'"
+                                      :id="key"
                                       :sendChartFilters="sendChartFilters"
-                                      :computedValues="computedValues"></dashboard-graph-filter>
+                                      :computedValues="computedValues">
+              </dashboard-graph-filter>
               <template v-slot:activator="{ on }">
                 <div class="d-flex justify-space-between">
                   <v-icon color="success" v-on="on" @click="changeType('pie')">mdi-settings</v-icon>
                 </div>
               </template>
             </v-menu>
-            <div class="mt-3 mb-3 font-weight-bold" v-if="showPie.property && pieChartDatas.data != undefined">Показаны значения - {{ pieChartDatas.name }}</div>
-            <apexchart  width="500" type="pie" :options="pieChartOptions" :series="pieChartDatas.data" v-if="showPie.property && pieChartDatas.data != undefined"></apexchart>
-            <!--div class="d-flex justify-end" v-if="showPie.property">
-              <v-btn small color="success" @click="deleteCharts(pieChartDatas,'pie')">Удалить</v-btn>
-            </div-->
-          </base-material-card>
-        </div>
-        <!--div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('heatmap')">
-          <base-material-card icon="mdi-earth"
-                              title="Тепловая карта">
-            <v-menu :close-on-content-click="false"
-                    :nudge-right="40"
-                    style="background-color: #FFFFFF"
-                    transition="scale-transition"
-                    offset-y>
-              <dashboard-graph-filter :filters="filters"
-                                      :values="values"
-                                      :type="'heatmap'"
-                                      :sendChartFilters="sendChartFilters"
-                                      :computedValues="computedValues"></dashboard-graph-filter>
-              <template v-slot:activator="{ on }">
-                <div class="d-flex justify-space-between">
-                  <v-icon color="success" v-on="on">mdi-settings</v-icon>
-                </div>
-              </template>
-            </v-menu>
-            <apexchart  width="500" type="heatmap" :options="heatChartOptions" :series="series" v-if="showHeat.property"></apexchart>
-            <div class="d-flex justify-end" v-if="showHeat.property">
-              <v-btn small color="success" @click="deleteCharts(heatChartData)">Удалить</v-btn>
+            <div class="mt-3 mb-3 font-weight-bold" v-if="showPie.property && items.pieChartDatas.data != undefined && items.pieChartDatas.data != ''">Показаны значения - {{ items.pieChartDatas.name }}</div>
+            <apexchart  width="500" type="pie" :options="items.pieChartOptions" :series="items.pieChartDatas.data" v-if="showPie.property && items.pieChartDatas.data != undefined && items.pieChartDatas.data != ''"></apexchart>
+            <div class="d-flex justify-end mt-2 pr-0">
+              <v-btn small color="success" class="mr-0" @click="deleteView('pie',key)">Удалить</v-btn>
             </div>
           </base-material-card>
-        </div-->
+        </div>
       </div>
 
     </div>
@@ -638,12 +701,17 @@
       name: "SummaryTables",
 
       props: {
+        comparative_table_results: Array,
+        pivot_table_results: Array,
+        lineCharts: Array,
+        areaCharts: Array,
+        barCharts: Array,
+        pieCharts: Array,
         filters: Object,
         values: Object,
         computedValues: Object,
         savedData: Object,
         block: Object,
-        lineChart: Array,
         lineChartData: Array,
         areaChartData: Array,
         barChartData: Array,
@@ -660,6 +728,11 @@
         showBar: Object,
         showPie: Object,
         showHeat: Object,
+        usersData: Array,
+        userData: Object,
+        addUser: Function,
+        changeUserStatus: Function,
+        deleteUser: Function
       },
 
       components: {
@@ -671,10 +744,6 @@
 
       data: () => ({
         series: [2, 4, 1, 2, 1, 1],
-
-        comparative_table_result: [],
-        pivot_table_result: [],
-
         buttonOneIsPressed: true,
         buttonTwoIsPressed: false,
         buttonThreeIsPressed: false,
@@ -683,6 +752,15 @@
         showButtonThree: true,
 
         temp: [],
+
+        getFilterTypeTitle: {
+            'pivot' : 'сводную таблицу',
+            'comparative' : 'сравнительную таблицу',
+            'line' : 'линейную диаграмму',
+            'area' : 'секторную диаграмму',
+            'bar' : 'столбчатую диаграмму',
+            'pie' : 'круговую диаграмму'
+        }
       }),
 
       methods: {
@@ -693,12 +771,12 @@
           this.values.isLoading = value;
         },
 
-        sendTableFilters(type) {
+        sendTableFilters(type, id = 0) {
           switch (type) {
             case "comparative":
               this.setIsLoading(true);
-              axios.post('/get_comparative_report', this.filters).then(response => {
-                this.setComparativeTableData(response.data);
+              axios.post('/get_comparative_report', this.filters, id).then(response => {
+                this.setComparativeTableData(response.data, id);
               }).catch(error => {
                 alert(error);
                 this.setIsLoading(false);
@@ -707,8 +785,8 @@
 
             case "pivot":
               this.setIsLoading(true);
-              axios.post('/get_pivot_report', this.filters).then(response => {
-                this.setPivotTableData(response.data);
+              axios.post('/get_pivot_report', this.filters, id).then(response => {
+                this.setPivotTableData(response.data, id);
               }).catch(error => {
                 alert(error);
                 this.setIsLoading(false);
@@ -722,20 +800,27 @@
           }
         },
 
-        setComparativeTableData(response) {
-          this.comparative_table_result = response;
+        setComparativeTableData(response, id) {
+          this.comparative_table_results[id].comparative_table_result = response;
+          //this.comparative_table_result = response;
           this.setIsLoading(false);
+          this.clearFilter();
         },
-        setPivotTableData(response) {
-          this.pivot_table_result = response;
+        setPivotTableData(response, id) {
+          this.pivot_table_results[id].pivot_table_result = response;
           this.setIsLoading(false);
+          this.clearFilter();
         },
 
         exportTableToExcel(tableID, filename = '') {
           var downloadLink;
-          var dataType = 'application/vnd.ms-excel';
+          //var dataType = 'application/vnd.ms-excel';
           var tableSelect = document.getElementById(tableID);
-          var tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
+          //var tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
+
+          var tableHTML = tableSelect.outerHTML;
+          tableHTML = tableHTML+'<div><br><b>Указанные значения - '+this.getLabels(this.filters.values)+'</b></div>';
+          var dataType = 'data:application/vnd.ms-excel,' + '\uFEFF' + encodeURIComponent(tableHTML);
 
           // Specify file name
           filename = filename ? filename + '.xls' : 'excel_data.xls';
@@ -746,14 +831,15 @@
           document.body.appendChild(downloadLink);
 
           if(navigator.msSaveOrOpenBlob){
-            var blob = new Blob(['\ufeff', tableHTML], {
+            var blob = new Blob(['\ufeff', encodeURIComponent(tableHTML)], {
               type: dataType
             });
             navigator.msSaveOrOpenBlob( blob, filename);
           }
           else {
             // Create a link to the file
-            downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+            //downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+            downloadLink.href = dataType;
 
             // Setting the file name
             downloadLink.download = filename;
@@ -849,7 +935,7 @@
             'megapolis_count': 'Мегаполис (Мегаполис, Мегаполис 100,  Страхование имущества)',
             'amortization_count': 'Амортизация',
             'kasko_count': 'Каско (Автокаско, Классик, Прогресс)',
-            'kommesk_comfort_count': 'Коммеск-Комфортf',
+            'kommesk_comfort_count': 'Коммеск-Комфорт',
             'tour_count': 'ВЗР (все из узла страхование путеш-в)',
           };
           for(let name in labels) {
@@ -858,21 +944,20 @@
         },
 
         limiter(type) {
-            switch (type) {
-              case 'line':
-                if(this.lineChart.length > 3) this.lineChart.pop();
-                else {
-                  for(let key in this.series) {
-                    if(this.lineChart.includes(this.series[key].value)) {
-                      this.lineChartData.push(this.series[key]);
-                    }
-                  }
-                }
-            }
-
+            // switch (type) {
+            //   case 'line':
+            //     if(this.lineChart.length > 3) this.lineChart.pop();
+            //     else {
+            //       for(let key in this.series) {
+            //         if(this.lineChart.includes(this.series[key].value)) {
+            //           this.lineChartData.push(this.series[key]);
+            //         }
+            //       }
+            //     }
+            // }
         },
 
-        sendChartFilters(type) {
+        sendChartFilters(type,id) {
           switch(type) {
             case 'line':
               //if(this.lineChartData.length === 3) {
@@ -908,90 +993,120 @@
               break;
           }
           this.setIsLoading(true);
-          axios.post('/get_chart_report', this.filters).then(response => {
-            this.setChartOptions(type, response.data);
+          axios.post('/get_chart_report', this.filters,id).then(response => {
+            this.setChartOptions(type, response.data,id);
           })
         },
 
-        setChartOptions(type, response) {
+        setChartOptions(type, response, id) {
           var vm = this;
           switch (type) {
             case 'line':
               response.series.forEach(item => {
-                if (item.value === vm.filters.values) vm.lineChartData[0] = item; // push
+                if (item.value === vm.filters.values) vm.lineCharts[id].lineChartData[0] = item; // push
               });
-              this.lineChartOptions.xaxis.categories = response.xaxis;
+              this.lineCharts[id].lineChartOptions.xaxis.categories = response.xaxis;
               this.showLine.property = true;
               this.setIsLoading(false);
+              this.clearFilter();
               break;
             case 'area':
               response.series.forEach(item => {
-                if (item.value === vm.filters.values) vm.areaChartData[0] = item;  //push
+                if (item.value === vm.filters.values) vm.areaCharts[id].areaChartData[0] = item;  //push
               });
-              this.areaChartOptions.xaxis.categories = response.xaxis;
+              this.areaCharts[id].areaChartOptions.xaxis.categories = response.xaxis;
               this.showArea.property = true;
               this.setIsLoading(false);
+              this.clearFilter();
               break;
             case 'bar':
               response.series.forEach(item => {
-                if (item.value === vm.filters.values) vm.barChartData[0] = item;   //push
+                if (item.value === vm.filters.values) vm.barCharts[id].barChartData[0] = item;   //push
               });
-              this.barChartOptions.xaxis.categories = response.xaxis;
+              this.barCharts[id].barChartOptions.xaxis.categories = response.xaxis;
               this.showBar.property = true;
               this.setIsLoading(false);
+              this.clearFilter();
               break;
             case 'pie':
-              // response.series.forEach(item => {
-              //   if(item.value === vm.filters.values) vm.pieChartData.push(item);
-              // });
-              this.pieChartOptions.labels = response.xaxis;
-              this.pieChartDatas.data = response.series[0].data;
-              this.pieChartDatas.name = response.series[0].name;
+              this.pieCharts[id].pieChartOptions.labels = response.xaxis;
+              this.pieCharts[id].pieChartDatas.data = response.series[0].data;
+              this.pieCharts[id].pieChartDatas.name = response.series[0].name;
               this.showPie.property = true;
               this.setIsLoading(false);
+              this.clearFilter();
               break;
-            case 'heatmap':
-              // response.series.forEach(item => {
-              //   if(item.value === vm.filters.values) vm.heatChartData = item.data;
-              // });
-              // this.heatChartOptions.xaxis = response.xaxis;
-              // this.showHeat.property = true;
-              // this.setIsLoading(false);
-              // break;
             default:
               break;
           }
         },
-
-        deleteCharts(array,type = null) {
-          if (type == 'pie') {
-            this.showPie.property = false;
-            this.pieChartOptions.labels = [];
-            this.pieChartDatas.data = [];
-          } else {
-            if (array.length === 1) {
-              if (array === this.lineChartData) {
-                this.showLine.property = false;
-                this.lineChartOptions.xaxis.categories = [];
-                array.pop();
-              } else if (array === this.areaChartData) {
-                this.showArea.property = false;
-                this.areaChartOptions.xaxis.categories = [];
-                array.pop();
-              } else if (array === this.barChartData) {
-                this.showBar.property = false;
-                this.barChartData.xaxis.categories = [];
-                array.pop();
-              } else if (array === this.heatChartData) {
-                this.showHeat.property = false;
-                this.heatChartOptions.xaxis.categories = [];
-                array.pop();
-              } else return;
-            } else {
-              array.pop();
-            }
+        clearFilter(){
+          this.filters.region_id = null;
+          this.filters.age_category = null;
+          this.filters.gender = null;
+          this.filters.insurance_class = null;
+          this.filters.vehicle_year_category = null;
+          this.filters.vehicle_type = null;
+          this.filters.referrer_id = null;
+          this.filters.department_id = null;
+          this.filters.sale_center_id = null;
+          this.filters.sale_channel_id = null;
+          this.filters.vehicle_model = null;
+          this.filters.vehicle_brand = null;
+          this.filters.status_id = null;
+          //this.filters.columns = null;
+          //this.filters.rows = null;
+          //this.filters.values = 'vts_overall_sum';
+          this.filters.query_type = '';
+        },
+        addView (type) {
+          switch (type) {
+          case 'pivot':
+            this.pivot_table_results.push({ pivot_table_result:[] });
+            break;
+          case 'comparative':
+            this.comparative_table_results.push({ comparative_table_result:[] });
+            break;
+          case 'line':
+            var data = { lineChartData:[], lineChartOptions: { xaxis: { categories: [], } } };
+            this.lineCharts.push(data);
+            break;
+          case 'area':
+            var data = { areaChartData:[], areaChartOptions: { xaxis: { categories: [], } } };
+            this.areaCharts.push(data);
+            break;
+          case 'bar':
+            var data = { barChartData:[], barChartOptions: {  dataLabels: { enabled: false }, xaxis: { categories: [], } } };
+            this.barCharts.push(data);
+            break;
+          case 'pie':
+            var data = { pieChartDatas: { data: '',  name: '', }, pieChartOptions: { labels: [], }, };
+            this.pieCharts.push(data);
+            break;
           }
-        }
+        },
+        deleteView(type, id){
+          this.setIsLoading(true);
+          if(type === 'pivot'){
+            this.pivot_table_results.splice(id,1);
+            this.setIsLoading(false);
+          } else if(type === 'comparative'){
+            this.comparative_table_results.splice(id,1);
+            this.setIsLoading(false);
+          } else if(type === 'line'){
+            this.lineCharts.splice(id,1);
+            this.setIsLoading(false);
+          } else if(type === 'area'){
+            this.areaCharts.splice(id,1);
+            this.setIsLoading(false);
+          } else if(type === 'bar'){
+            this.barCharts.splice(id,1);
+            this.setIsLoading(false);
+          } else if(type === 'pie'){
+            this.pieCharts.splice(id,1);
+            this.setIsLoading(false);
+          }
+        },
       },
     }
 </script>

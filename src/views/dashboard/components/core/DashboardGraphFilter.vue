@@ -112,7 +112,7 @@
       </v-tab-item>
     </v-tabs-items>
     <div class="d-flex justify-center">
-      <v-btn small tile color="success" @click="sendChartFilters(type)">Применить</v-btn>
+      <v-btn small tile color="success" @click="sendChartFilters(type,id)">Применить</v-btn>
     </div>
   </div>
 </template>
@@ -126,6 +126,7 @@
       values: Object,
       computedValues: Object,
       type: String,
+      id: Number,
       sendChartFilters: Function,
     },
 

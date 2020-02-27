@@ -108,6 +108,7 @@
         name: '',
         email: '',
         password: '',
+        confirmPassword: '',
       },
       showLine: {
         property: false
@@ -126,7 +127,14 @@
       },
 
       savedData: {
-        countOnPage: 10,
+        countOnPageItems: [
+          {name: 'Вывести 3 записи', value: 3},
+          {name: 'Вывести 10 записей', value: 10},
+          {name: 'Вывести 20 записей', value: 20},
+          {name: 'Вывести 100 записей', value: 100},
+          {name: 'Вывести 1000 записей', value: 1000}
+        ],
+        countOnPage: 3,
         pivot_table_result: '',
         comparative_table_result: '',
         lineChartData: [],
@@ -563,36 +571,41 @@
         }
       },
       addUser() {
-        this.setLoading(true);
-        if(this.userData.name == '' || this.userData.email == '' || this.userData.password == ''){
+        if(this.userData.name == '' || this.userData.email == '' || this.userData.password == '' || this.userData.confirmPassword == ''){
           alert('Заполните пожалуйста все поля');
           this.setLoading(false);
           return false;
         }
-        axios.post('/add_user', this.userData).then((response) => {
-          if(response.data.success) {
-            alert('Пользователь успешно добавлен');
-            this.userData.name = '';
-            this.userData.email = '';
-            this.userData.password = '';
-            this.getUsers(1);
-          } else {
-            if(response.data.error != ''){
-              alert(response.data.error);
-              this.setLoading(false);
+        if(this.userData.password === this.userData.confirmPassword) {
+          this.setLoading(true);
+          axios.post('/add_user', this.userData).then((response) => {
+            if (response.data.success) {
+              alert('Пользователь успешно добавлен');
+              this.userData.name = '';
+              this.userData.email = '';
+              this.userData.password = '';
+              this.userData.confirmPassword = '';
+              this.getUsers(1);
             } else {
-              this.setLoading(false);
-              alert('Ошибка! Обратитесь пожалуйста к системному администратору');
+              if (response.data.error != '') {
+                alert(response.data.error);
+                this.setLoading(false);
+              } else {
+                this.setLoading(false);
+                alert('Ошибка! Обратитесь пожалуйста к системному администратору');
+              }
             }
-          }
-        });
+          });
+        } else {
+          alert('Пароли не совпадают');
+        }
       },
       changeUserStatus(id) {
         this.setLoading(true);
         axios.post('/change_status',{ id:id }).then((response) => {
           if(response.data.success){
             this.getUsers(1);
-            alert('Статус успешно сменен');
+            //alert('Статус успешно сменен');
           } else {
             this.setLoading(false);
             alert('Ошибка');
@@ -600,26 +613,31 @@
         });
       },
       changeCurrentUserData(){
-        if(this.currentUser[0].name == '' || this.currentUser[0].email == '' || this.currentUser[0].password == ''){
+        if(this.currentUser[0].name == '' || this.currentUser[0].email == '' || this.currentUser[0].password == '' || this.currentUser[0].confirmPassword == ''){
           alert('Заполните пожалуйста все данные');
         } else {
-          this.setLoading(true);
-          axios.post('/change_user_data', {user: this.currentUser[0]}).then((response) => {
-            if (response.data.success) {
-              alert('Данные успешно изменены');
-              this.setLoading(false);
-            } else {
-              this.setLoading(false);
-              alert('Ошибка записи в базу данных');
-            }
-          });
+          if(this.currentUser[0].password === this.currentUser[0].confirmPassword) {
+            this.setLoading(true);
+            axios.post('/change_user_data', {user: this.currentUser[0]}).then((response) => {
+              if (response.data.success) {
+                alert('Данные успешно изменены');
+                this.setLoading(false);
+              } else {
+                this.setLoading(false);
+                alert('Ошибка записи в базу данных');
+              }
+            });
+          } else {
+            alert('Пароли не совпадают');
+          }
         }
       },
       deleteUser(id){
+        this.setLoading(true);
         axios.post('/delete_user',{ id:id }).then((response) => {
           if(response.data.success){
             this.getUsers(1);
-            alert('Пользователь успешно удален');
+            //alert('Пользователь успешно удален');
           } else {
             this.setLoading(false);
             alert('Ошибка удаления');

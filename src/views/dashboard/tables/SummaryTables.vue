@@ -9,25 +9,33 @@
       <div class="mt-6">
         <h3>Ваши данные</h3>
         <v-row>
-          <v-col cols="12" sm="4" md="3">
+          <v-col cols="12" sm="4" md="2">
             <v-text-field
               label="Имя"
               v-model="currentUser[0].name"
             ></v-text-field>
           </v-col>
-          <v-col cols="12" sm="4" md="3">
+          <v-col cols="12" sm="4" md="2">
             <v-text-field
               label="Email"
               v-model="currentUser[0].email"
             ></v-text-field>
           </v-col>
-          <v-col cols="12" sm="4" md="3">
+          <v-col cols="12" sm="4" md="2">
             <v-text-field
+              type="password"
               label="Пароль"
               v-model="currentUser[0].password"
             ></v-text-field>
           </v-col>
-          <v-col cols="12" sm="4" md="3">
+          <v-col cols="12" sm="4" md="2">
+            <v-text-field
+              type="password"
+              label="Повторите пароль"
+              v-model="currentUser[0].confirmPassword"
+            ></v-text-field>
+          </v-col>
+          <v-col class="text-center" cols="12" sm="4" md="4">
             <v-btn class="mt-5" tile small outlined color="success" @click="changeCurrentUserData()">
               Сохранить изменения
             </v-btn>
@@ -41,25 +49,33 @@
         <h3>Список пользователей</h3>
         <div>
           <v-row>
-            <v-col cols="12" sm="4" md="3">
+            <v-col cols="12" sm="4" md="2">
               <v-text-field
                 label="Имя"
                 v-model="userData.name"
               ></v-text-field>
             </v-col>
-            <v-col cols="12" sm="4" md="3">
+            <v-col cols="12" sm="4" md="2">
               <v-text-field
                 label="Email"
                 v-model="userData.email"
               ></v-text-field>
             </v-col>
-            <v-col cols="12" sm="4" md="3">
+            <v-col cols="12" sm="4" md="2">
               <v-text-field
+                type="password"
                 label="Пароль"
                 v-model="userData.password"
               ></v-text-field>
             </v-col>
-            <v-col cols="12" sm="4" md="3">
+            <v-col cols="12" sm="4" md="2">
+              <v-text-field
+                type="password"
+                label="Повторите пароль"
+                v-model="userData.confirmPassword"
+              ></v-text-field>
+            </v-col>
+            <v-col class="text-center" cols="12" sm="4" md="4">
               <v-btn class="mt-5" tile small outlined color="success" @click="addUser()">
                 Добавить пользователя
               </v-btn>
@@ -111,7 +127,23 @@
     </base-material-card>
 
     <div id="savedData" v-if="this.block.savedData">
-      <h1 class="mt-3">Сохраненные данные</h1>
+      <v-row>
+        <v-col cols="12" sm="6" md="8">
+          <h1 class="mt-2">Сохраненные данные</h1>
+        </v-col>
+        <v-col cols="12" sm="6" md="4">
+          <v-flex xs12 style="background:none">
+            <v-select :items="savedData.countOnPageItems"
+                      label="Количество записей"
+                      item-text="name"
+                      item-value="value"
+                      v-model="savedData.countOnPage"
+                      solo
+                      @change="getSavedData()"
+            ></v-select>
+          </v-flex>
+        </v-col>
+      </v-row>
       <!--v-row>
         <v-col cols="12" sm="6" md="3">
           <h1 class="mt-3">Сохраненные данные</h1>
@@ -782,6 +814,7 @@
       },
 
       data: () => ({
+        test:'',
         series: [2, 4, 1, 2, 1, 1],
         buttonOneIsPressed: true,
         buttonTwoIsPressed: false,

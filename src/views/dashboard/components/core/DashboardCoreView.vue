@@ -36,7 +36,8 @@
                     :changeUserStatus="changeUserStatus"
                     :deleteUser="deleteUser"
                     :currentUser="currentUser"
-                    :changeCurrentUserData="changeCurrentUserData">
+                    :changeCurrentUserData="changeCurrentUserData"
+                    :getSavedData="getSavedData">
 
     </summary-tables>
     <div class="text-center">
@@ -125,6 +126,7 @@
       },
 
       savedData: {
+        countOnPage: 10,
         pivot_table_result: '',
         comparative_table_result: '',
         lineChartData: [],
@@ -340,6 +342,7 @@
             var item = this.values.view_type[i];
             axios.post('/get_saved_data',
               {
+                take: this.savedData.countOnPage,
                 type: this.values.view_type[i],
                 from_date: this.filters.from_date,
                 to_date: this.filters.to_date

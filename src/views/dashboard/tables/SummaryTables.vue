@@ -111,7 +111,20 @@
     </base-material-card>
 
     <div id="savedData" v-if="this.block.savedData">
-      <h1>Сохраненные данные</h1>
+      <h1 class="mt-3">Сохраненные данные</h1>
+      <!--v-row>
+        <v-col cols="12" sm="6" md="3">
+          <h1 class="mt-3">Сохраненные данные</h1>
+        </v-col>
+        <v-col cols="9" sm="2" md="2">
+          <v-text-field label="Количество на странице" v-model="savedData.countOnPage"></v-text-field>
+        </v-col>
+        <v-col cols="12" sm="4" md="3">
+          <v-btn class="mt-5" tile small outlined color="success" @click="getSavedData()">
+            обновить
+          </v-btn>
+        </v-col>
+      </v-row-->
       <base-material-card color="success"
                           icon="mdi-clipboard-text"
                           inline
@@ -757,7 +770,8 @@
         addUser: Function,
         changeCurrentUserData: Function,
         changeUserStatus: Function,
-        deleteUser: Function
+        deleteUser: Function,
+        getSavedData: Function,
       },
 
       components: {

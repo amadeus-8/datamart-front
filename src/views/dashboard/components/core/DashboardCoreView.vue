@@ -4,7 +4,8 @@
     <div class="ml-lg-8 mt-5">
       <v-btn tile small outlined color="success active" @click="getSavedData()">Сохраненные данные</v-btn>
       <v-btn tile small outlined color="success" @click="clearSavedData()" >Витрина данных</v-btn>
-      <v-btn tile small outlined color="success" @click="getUsers()" >Пользователи</v-btn>
+      <v-btn tile small outlined color="success" v-if="currentUser.length == 0" @click="getUsers()" >Пользователи</v-btn>
+      <v-btn tile small outlined color="error" v-if="currentUser.length != 0" @click="usersData = [],currentUser = []" >Закрыть раздел пользователей</v-btn>
     </div>
 
     <dashboard-core-drawer :filters="filters"
@@ -18,17 +19,6 @@
                     :computedValues="computedValues"
                     :savedData="savedData"
                     :block="block"
-                    :lineChartData="lineChartData"
-                    :areaChartData="areaChartData"
-                    :barChartData="barChartData"
-                    :pieChartData="pieChartData"
-                    :pieChartDatas="pieChartDatas"
-                    :heatChartData="heatChartData"
-                    :lineChartOptions="lineChartOptions"
-                    :areaChartOptions="areaChartOptions"
-                    :barChartOptions="barChartOptions"
-                    :pieChartOptions="pieChartOptions"
-                    :heatChartOptions="heatChartOptions"
                     :showLine = "showLine"
                     :showArea = "showArea"
                     :showBar = "showBar"
@@ -44,7 +34,9 @@
                     :userData="userData"
                     :addUser="addUser"
                     :changeUserStatus="changeUserStatus"
-                    :deleteUser="deleteUser">
+                    :deleteUser="deleteUser"
+                    :currentUser="currentUser"
+                    :changeCurrentUserData="changeCurrentUserData">
 
     </summary-tables>
     <div class="text-center">
@@ -110,46 +102,11 @@
         },
       }],
       usersData: [],
-
-      lineChartOptions: {
-        xaxis: {
-          categories: [],
-        }
-      },
-      lineChartData: [],
-      areaChartData: [],
-      barChartData: [],
-      pieChartData: [],
+      currentUser: [],
       userData: {
         name: '',
         email: '',
         password: '',
-      },
-      pieChartDatas: {
-        data: '',
-        name: '',
-      },
-      heatChartData: [],
-      areaChartOptions: {
-        xaxis: {
-          categories: [],
-        }
-      },
-      barChartOptions: {
-        dataLabels: {
-          enabled: false
-        },
-        xaxis: {
-          categories: [],
-        }
-      },
-      pieChartOptions: {
-        labels: [],
-      },
-      heatChartOptions: {
-        xaxis: {
-          categories: [],
-        }
       },
       showLine: {
         property: false
@@ -193,7 +150,6 @@
         pieChartOptions: {
           labels: [],
           chart: {
-            //width: 380,
             type: 'pie',
           },
           responsive: [{
@@ -249,70 +205,22 @@
 
       computedValues: {
         kbms: [
-          {
-            name: 'M',
-            value: 'М',
-          },
-          {
-            name: '0',
-            value: '0',
-          },
-          {
-            name: '1',
-            value: '1',
-          },
-          {
-            name: '2',
-            value: '2',
-          },
-          {
-            name: '3',
-            value: '3',
-          },
-          {
-            name: '4',
-            value: '4',
-          },
-          {
-            name: '5',
-            value: '5',
-          },
-          {
-            name: '6',
-            value: '6',
-          },
-          {
-            name: '7',
-            value: '7',
-          },
-          {
-            name: '8',
-            value: '8',
-          },
-          {
-            name: '9',
-            value: '9',
-          },
-          {
-            name: '10',
-            value: '10',
-          },
-          {
-            name: '11',
-            value: '11',
-          },
-          {
-            name: '12',
-            value: '12',
-          },
-          {
-            name: '13',
-            value: '13',
-          },
-          {
-            name: 'ИП',
-            value: 'ИП',
-          },
+          { name: 'M', value: 'М', },
+          { name: '0', value: '0',  },
+          { name: '1', value: '1', },
+          { name: '2', value: '2', },
+          { name: '3', value: '3', },
+          { name: '4', value: '4', },
+          { name: '5', value: '5', },
+          { name: '6', value: '6', },
+          { name: '7', value: '7', },
+          { name: '8', value: '8', },
+          { name: '9', value: '9', },
+          { name: '10', value: '10', },
+          { name: '11', value: '11', },
+          { name: '12', value: '12', },
+          { name: '13', value: '13', },
+          { name: 'ИП', value: 'ИП', },
         ],
         age_categories: [],
         clients_status: [],
@@ -324,22 +232,10 @@
         vehicle_models: [],
         vehicle_brands: [],
         filter_options: [
-          {
-            text: "Город",
-            value: "region"
-          },
-          {
-            text: "Возраст",
-            value: "age"
-          },
-          {
-            text: "Центр продаж",
-            value: "sale_center"
-          },
-          {
-            text: "Канал продаж",
-            value: "sale_channel"
-          },
+          { text: "Город", value: "region" },
+          { text: "Возраст", value: "age" },
+          { text: "Центр продаж", value: "sale_center" },
+          { text: "Канал продаж", value: "sale_channel" },
           {
             text: "Канал привлечения",
             value: "referrer"
@@ -394,14 +290,6 @@
             text: 'Сумма премий ВТС',
             value: 'vts_overall_sum',
           },
-          // {
-          //   text: 'Ср. чек общий (ГПО ВТС, кросс, доброволки)',
-          //   value: 'avg_sum',
-          // },
-          // {
-          //   text: 'Ср.чек кросс и доброволки',
-          //   value: 'avg_cross_result',
-          // },
           {
             text: 'Кол-во Убытков общее',
             value: 'overall_lost_count',
@@ -649,14 +537,26 @@
           this.setLoading(true);
           axios.post('/get_users').then((response) => {
             if (response.data.success) {
-              this.usersData = response.data.result;
+              if(response.data.result != null) {
+                this.usersData = response.data.result;
+              } else {
+                this.usersData = [];
+              }
+              this.currentUser.push(response.data.currentUser);
             } else {
-              alert(response.data.error);
+              this.usersData = [];
+              if(response.data.error != '') {
+                alert(response.data.error);
+              }
+              // if(response.data.errorCurrentUser != '') {
+              //   alert(response.data.errorCurrentUser);
+              // }
             }
             this.setLoading(false);
           });
         } else {
           this.usersData = [];
+          this.setLoading(false);
         }
       },
       addUser() {
@@ -685,6 +585,7 @@
         });
       },
       changeUserStatus(id) {
+        this.setLoading(true);
         axios.post('/change_status',{ id:id }).then((response) => {
           if(response.data.success){
             this.getUsers(1);
@@ -694,6 +595,22 @@
             alert('Ошибка');
           }
         });
+      },
+      changeCurrentUserData(){
+        if(this.currentUser[0].name == '' || this.currentUser[0].email == '' || this.currentUser[0].password == ''){
+          alert('Заполните пожалуйста все данные');
+        } else {
+          this.setLoading(true);
+          axios.post('/change_user_data', {user: this.currentUser[0]}).then((response) => {
+            if (response.data.success) {
+              alert('Данные успешно изменены');
+              this.setLoading(false);
+            } else {
+              this.setLoading(false);
+              alert('Ошибка записи в базу данных');
+            }
+          });
+        }
       },
       deleteUser(id){
         axios.post('/delete_user',{ id:id }).then((response) => {

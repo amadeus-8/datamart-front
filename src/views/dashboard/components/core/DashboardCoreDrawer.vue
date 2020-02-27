@@ -8,7 +8,7 @@
     <v-list-item two-line>
       <v-list-item-content>
         <v-list-item-title class="text-uppercase font-weight-regular display-2">
-          <span class="logo-normal" @click="getUsers()">Datamart</span>
+          <span class="logo-normal">Datamart</span>
         </v-list-item-title>
       </v-list-item-content>
     </v-list-item>

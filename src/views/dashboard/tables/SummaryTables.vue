@@ -4,73 +4,110 @@
                tag="section">
 
 
-    <base-material-card color="success" icon="mdi-clipboard-text" inline title="Пользователи" class="px-5 py-3" v-if="usersData.length > 0">
-      <div>
+    <base-material-card  v-if="currentUser.length > 0" color="success" icon="mdi-clipboard-text" inline title="Пользователи" class="px-5 py-3">
+      <!--  Текущии пользователь  -->
+      <div class="mt-6">
+        <h3>Ваши данные</h3>
         <v-row>
-          <v-col cols="12" sm="6" md="3">
+          <v-col cols="12" sm="4" md="3">
             <v-text-field
               label="Имя"
-              v-model="userData.name"
+              v-model="currentUser[0].name"
             ></v-text-field>
           </v-col>
-          <v-col cols="12" sm="6" md="3">
+          <v-col cols="12" sm="4" md="3">
             <v-text-field
               label="Email"
-              v-model="userData.email"
+              v-model="currentUser[0].email"
             ></v-text-field>
           </v-col>
-          <v-col cols="12" sm="6" md="3">
+          <v-col cols="12" sm="4" md="3">
             <v-text-field
               label="Пароль"
-              v-model="userData.password"
+              v-model="currentUser[0].password"
             ></v-text-field>
           </v-col>
-          <v-col cols="12" sm="6" md="3">
-            <v-btn class="mt-5" tile small outlined color="success" @click="addUser()">
-              Сохранить
+          <v-col cols="12" sm="4" md="3">
+            <v-btn class="mt-5" tile small outlined color="success" @click="changeCurrentUserData()">
+              Сохранить изменения
             </v-btn>
           </v-col>
         </v-row>
-
-        <v-simple-table>
-          <template v-slot:default>
-            <thead>
-            <tr>
-              <th class="text-left">№</th>
-              <th class="text-left">Имя</th>
-              <th class="text-left">Email</th>
-              <th class="text-left">Статус</th>
-              <th class="text-center">Действие</th>
-              <th class="text-center">Удаление</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="u,key in usersData">
-              <td>{{ key+1 }}</td>
-              <td>{{ u.name }}</td>
-              <td>{{ u.email }}</td>
-              <td>
-                <span v-if="u.status == 1">Админ</span>
-                <span v-else>Пользователь</span>
-              </td>
-              <td class="text-center">
-                <v-btn tile small outlined color="success active" v-if="u.status == 1" @click="changeUserStatus(u.id)">
-                  Сделать пользователем
-                </v-btn>
-                <v-btn tile small outlined color="success active" v-else @click="changeUserStatus(u.id)">
-                  Сделать админом
-                </v-btn>
-              </td>
-              <td class="text-center">
-                <v-btn tile small outlined color="error active" @click="deleteUser(u.id)">
-                  Удалить
-                </v-btn>
-              </td>
-            </tr>
-            </tbody>
-          </template>
-        </v-simple-table>
       </div>
+      <!--  Конец текущии пользователь  -->
+
+      <!--  Все пользователи  -->
+      <div class="mt-6" v-if="usersData.length > 0">
+        <h3>Список пользователей</h3>
+        <div>
+          <v-row>
+            <v-col cols="12" sm="4" md="3">
+              <v-text-field
+                label="Имя"
+                v-model="userData.name"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" sm="4" md="3">
+              <v-text-field
+                label="Email"
+                v-model="userData.email"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" sm="4" md="3">
+              <v-text-field
+                label="Пароль"
+                v-model="userData.password"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" sm="4" md="3">
+              <v-btn class="mt-5" tile small outlined color="success" @click="addUser()">
+                Добавить пользователя
+              </v-btn>
+            </v-col>
+          </v-row>
+
+          <v-simple-table>
+            <template v-slot:default>
+              <thead>
+              <tr>
+                <th class="text-left">№</th>
+                <th class="text-left">Имя</th>
+                <th class="text-left">Email</th>
+                <th class="text-left">Статус</th>
+                <th class="text-center">Действие</th>
+                <th class="text-center">Удаление</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr v-for="u,key in usersData">
+                <td>{{ key+1 }}</td>
+                <td>{{ u.name }}</td>
+                <td>{{ u.email }}</td>
+                <td>
+                  <span v-if="u.status == 1">Админ</span>
+                  <span v-else>Пользователь</span>
+                </td>
+                <td class="text-center">
+                  <v-btn tile small outlined color="success active" v-if="u.status == 1" @click="changeUserStatus(u.id)">
+                    Сделать пользователем
+                  </v-btn>
+                  <v-btn tile small outlined color="success active" v-else @click="changeUserStatus(u.id)">
+                    Сделать админом
+                  </v-btn>
+                </td>
+                <td class="text-center">
+                  <v-btn tile small outlined color="error active" @click="deleteUser(u.id)">
+                    Удалить
+                  </v-btn>
+                </td>
+              </tr>
+              </tbody>
+            </template>
+          </v-simple-table>
+        </div>
+      </div>
+      <!--  Конец все пользователи  -->
+
     </base-material-card>
 
     <div id="savedData" v-if="this.block.savedData">
@@ -188,8 +225,6 @@
                           class="px-5 py-3 mb-5"
                           v-if="values.view_type.includes('comparative')"
                           v-for="(comparative_table_result,key) in savedData.comparative_table_result">
-
-
         <v-flex xs12>
           <v-select :items="computedValues.filter_values"
                     label="Значения"
@@ -298,10 +333,9 @@
           </div>
         </div>
       </base-material-card>
-
       <div class="d-flex row">
-        <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('line') && Object.keys(savedData.lineChartData).length > 0" >
-          <div v-for="item,key in savedData.lineChartData">
+        <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('line') && Object.keys(savedData.lineChartData).length > 0"  v-for="item,key in savedData.lineChartData">
+          <div>
             <base-material-card icon="mdi-earth" title="Линейная диаграмма">
               <div class="mt-3 mb-3 font-weight-bold">Показаны значения - {{ item[0].name }}</div>
               <apexchart  width="500" type="line" :options="savedData.lineChartOptions[key]" :series="item" v-if="showLine.property"></apexchart >
@@ -309,8 +343,8 @@
           </div>
         </div>
 
-        <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('area') && Object.keys(savedData.areaChartData).length > 0">
-          <div v-for="item,key in savedData.areaChartData">
+        <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('area') && Object.keys(savedData.areaChartData).length > 0" v-for="item,key in savedData.areaChartData">
+          <div>
             <base-material-card icon="mdi-earth" title="Секторная диаграмма">
               <div class="mt-3 mb-3 font-weight-bold">Показаны значения - {{ item[0].name }}</div>
               <apexchart  width="500" type="area" :options="savedData.areaChartOptions[key]" :series="item" v-if="showArea.property"></apexchart >
@@ -318,8 +352,8 @@
           </div>
         </div>
 
-        <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('bar') && Object.keys(savedData.barChartData).length > 0">
-          <div v-for="item,key in savedData.barChartData">
+        <div class="ml-4 mr-4 pt-2 pb-2" v-if="values.view_type.includes('bar') && Object.keys(savedData.barChartData).length > 0" v-for="item,key in savedData.barChartData">
+          <div>
             <base-material-card icon="mdi-earth" title="Столбчатая диаграмма" >
               <div class="mt-3 mb-3 font-weight-bold">Показаны значения - {{ item[0].name }}</div>
               <apexchart  width="500" type="bar"  :options="savedData.barChartOptions[key]" :series="item" v-if="showBar.property"></apexchart>
@@ -712,25 +746,16 @@
         computedValues: Object,
         savedData: Object,
         block: Object,
-        lineChartData: Array,
-        areaChartData: Array,
-        barChartData: Array,
-        pieChartData: Array,
-        heatChartData: Array,
-        lineChartOptions: Object,
-        areaChartOptions: Object,
-        barChartOptions: Object,
-        pieChartOptions: Object,
-        pieChartDatas: Object,
-        heatChartOptions: Object,
         showLine: Object,
         showArea: Object,
         showBar: Object,
         showPie: Object,
         showHeat: Object,
         usersData: Array,
+        currentUser: Array,
         userData: Object,
         addUser: Function,
+        changeCurrentUserData: Function,
         changeUserStatus: Function,
         deleteUser: Function
       },
@@ -750,9 +775,7 @@
         showButtonOne: true,
         showButtonTwo: true,
         showButtonThree: true,
-
         temp: [],
-
         getFilterTypeTitle: {
             'pivot' : 'сводную таблицу',
             'comparative' : 'сравнительную таблицу',
@@ -770,7 +793,6 @@
         setIsLoading(value) {
           this.values.isLoading = value;
         },
-
         sendTableFilters(type, id = 0) {
           switch (type) {
             case "comparative":
@@ -782,7 +804,6 @@
                 this.setIsLoading(false);
               });
               break;
-
             case "pivot":
               this.setIsLoading(true);
               axios.post('/get_pivot_report', this.filters, id).then(response => {
@@ -792,17 +813,14 @@
                 this.setIsLoading(false);
               });
               break;
-
             default:
               this.setIsLoading(false);
               alert("Выберите вид");
               break;
           }
         },
-
         setComparativeTableData(response, id) {
           this.comparative_table_results[id].comparative_table_result = response;
-          //this.comparative_table_result = response;
           this.setIsLoading(false);
           this.clearFilter();
         },
@@ -943,51 +961,22 @@
           }
         },
 
-        limiter(type) {
-            // switch (type) {
-            //   case 'line':
-            //     if(this.lineChart.length > 3) this.lineChart.pop();
-            //     else {
-            //       for(let key in this.series) {
-            //         if(this.lineChart.includes(this.series[key].value)) {
-            //           this.lineChartData.push(this.series[key]);
-            //         }
-            //       }
-            //     }
-            // }
-        },
-
         sendChartFilters(type,id) {
           switch(type) {
             case 'line':
-              //if(this.lineChartData.length === 3) {
                 this.showLine.property = false;
-              //  return;
-              //}
               break;
             case 'area':
-              //if(this.areaChartData.length === 3) {
                 this.showArea.property = false;
-              //  return;
-              //}
               break;
             case 'bar':
-              //if(this.barChartData.length === 3) {
                 this.showBar.property = false;
-              //  return;
-              //}
               break;
             case 'pie':
-              //if(this.pieChartData.length === 3){
                 this.showPie.property = false;
-                //return;
-              //}
               break;
             case 'heat':
-              //if(this.heatChartData.length === 3) {
                 this.showHeat.property = false;
-              //  return;
-              //}
               break;
             default:
               break;

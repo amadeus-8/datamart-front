@@ -217,13 +217,17 @@
           <v-simple-table :id="'pivotTable-'+key">
             <template v-slot:default>
               <thead>
-              <tr>
+              <tr v-if="pivot_table_result.labels.length > 0">
                 <th class="text-left">{{ pivot_table_result.property }}</th>
-                <th v-for="(item) in pivot_table_result.labels" v-if="pivot_table_result.labels.length > 1">{{ item }}</th>
-                <th v-else>
+                <th v-for="(item) in pivot_table_result.labels">{{ item }}</th>
+              </tr>
+              <tr v-else>
+                <th class="text-left">{{ pivot_table_result.property }}</th>
+                <th>
                   <span v-if="filters.values === 'ogpo_vts_result' || filters.values === 'ogpo_vts_count'">Премия ОС ГПО ВТС</span>
                   <span v-if="filters.values === 'vts_cross_result' || filters.values === 'avg_cross_result'">Премии др.продукты (Кросс + доброволки)</span>
                   <span v-if="filters.values === 'vts_overall_sum' || filters.values === 'avg_sum'">Сумма премий ВТС</span>
+                  <span v-if="filters.values === 'payout_sum'">Сумма выплаты</span>
                   <span v-if="filters.values === 'medical_count'">Медицина (Все из узла ДМС)</span>
                   <span v-if="filters.values === 'megapolis_count'">Мегаполис (Мегаполис, Мегаполис 100,  Страхование имущества)</span>
                   <span v-if="filters.values === 'amortization_count'">Амортизация</span>
@@ -246,7 +250,7 @@
                 <td v-for="items in item" >
                         <span v-for="(i, k) in items" v-if="k == filters.values">
                           <span v-if="i == null"> 0 </span>
-                          <span v-else>{{ i.toLocaleString() }}</span>
+                          <span v-else>{{ toDivide(i) }}</span>
                         </span>
                 </td>
               </tr>
@@ -329,14 +333,14 @@
                 <td>{{ key }}</td>
                 <td v-for="(item, index) in item[0]" v-if="index == filters.values">
                   <span v-if="item == null">0</span>
-                  <span v-else>{{ item.toLocaleString() }}</span>
+                  <span v-else>{{ toDivide(item) }}</span>
                 </td>
                 <td v-for="(item, index) in item[1]" v-if="index == filters.values">
                   {{ item }}%
                 </td>
                 <td v-for="(item, index) in item[2]" v-if="index == filters.values">
                   <span v-if="item == null">0</span>
-                  <span v-else>{{ item.toLocaleString() }}</span>
+                  <span v-else>{{ toDivide(item) }}</span>
                 </td>
                 <td v-for="(item, index) in item[3]" v-if="index == filters.values">
                   {{ item }}%
@@ -349,21 +353,21 @@
                 <td>Общий итог</td>
                 <td v-for="(item,key) in comparative_table_result.bottomData[0]" v-if="key == filters.values">
                   <span v-if="item == null">0</span>
-                  <span v-else>{{ item.toLocaleString() }}</span>
+                  <span v-else>{{ toDivide(item) }}</span>
                 </td>
                 <td>
                   100%
                 </td>
                 <td v-for="(item,key) in comparative_table_result.bottomData[1]" v-if="key == filters.values">
                   <span v-if="item == null">0</span>
-                  <span v-else>{{ item.toLocaleString() }}</span>
+                  <span v-else>{{ toDivide(item) }}</span>
                 </td>
                 <td>
                   100%
                 </td>
                 <td v-for="(item,key) in comparative_table_result.bottomData[2]" v-if="key == filters.values">
                   <span v-if="item == null">0</span>
-                  <span v-else>{{ item.toLocaleString() }}%</span>
+                  <span v-else>{{ toDivide(item) }}%</span>
                 </td>
               </tr>
               </tbody>
@@ -473,16 +477,20 @@
           </template>
         </v-menu>
         <div v-if="Object.keys(items.pivot_table_result).length > 0">
-          <v-simple-table :id="'pivotTable-'+key">
+          <v-simple-table :id="'pivotTable-'+key" sortBy="Город">
             <template v-slot:default>
               <thead>
-              <tr>
+              <tr v-if="items.pivot_table_result.labels.length > 0">
                 <th class="text-left">{{ items.pivot_table_result.property }}</th>
-                <th v-for="(item) in items.pivot_table_result.labels" v-if="items.pivot_table_result.labels.length > 0">{{ item }}</th>
-                <th v-else>
+                <th v-for="(item) in items.pivot_table_result.labels">{{ item }}</th>
+              </tr>
+              <tr  v-else>
+                <th class="text-left">{{ items.pivot_table_result.property }}</th>
+                <th>
                   <span v-if="filters.values === 'ogpo_vts_result' || filters.values === 'ogpo_vts_count'">Премия ОС ГПО ВТС</span>
                   <span v-if="filters.values === 'vts_cross_result' || filters.values === 'avg_cross_result'">Премии др.продукты (Кросс + доброволки)</span>
                   <span v-if="filters.values === 'vts_overall_sum' || filters.values === 'avg_sum'">Сумма премий ВТС</span>
+                  <span v-if="filters.values === 'payout_sum'">Сумма выплаты</span>
                   <span v-if="filters.values === 'medical_count'">Медицина (Все из узла ДМС)</span>
                   <span v-if="filters.values === 'megapolis_count'">Мегаполис (Мегаполис, Мегаполис 100,  Страхование имущества)</span>
                   <span v-if="filters.values === 'amortization_count'">Амортизация</span>
@@ -505,7 +513,7 @@
                 <td v-for="items in item" >
                     <span v-for="(i, k) in items" v-if="k == filters.values">
                       <span v-if="i == null"> 0 </span>
-                      <span v-else>{{ i.toLocaleString() }}</span>
+                      <span v-else>{{ toDivide(i) }}</span>
                     </span>
                 </td>
               </tr>
@@ -595,14 +603,14 @@
                 <td>{{ key }}</td>
                 <td v-for="(item, index) in item[0]" v-if="index == filters.values">
                   <span v-if="item == null">0</span>
-                  <span v-else>{{ item.toLocaleString() }}</span>
+                  <span v-else>{{ toDivide(item) }}</span>
                 </td>
                 <td v-for="(item, index) in item[1]" v-if="index == filters.values">
                   {{ item }}%
                 </td>
                 <td v-for="(item, index) in item[2]" v-if="index == filters.values">
                   <span v-if="item == null">0</span>
-                  <span v-else>{{ item.toLocaleString() }}</span>
+                  <span v-else>{{ toDivide(item) }}</span>
                 </td>
                 <td v-for="(item, index) in item[3]" v-if="index == filters.values">
                   {{ item }}%
@@ -615,21 +623,21 @@
                 <td>Общий итог</td>
                 <td v-for="(item,key) in items.comparative_table_result.bottomData[0]" v-if="key == filters.values">
                   <span v-if="item == null">0</span>
-                  <span v-else>{{ item.toLocaleString() }}</span>
+                  <span v-else>{{ toDivide(item) }}</span>
                 </td>
                 <td>
                   100%
                 </td>
                 <td v-for="(item,key) in items.comparative_table_result.bottomData[1]" v-if="key == filters.values">
                   <span v-if="item == null">0</span>
-                  <span v-else>{{ item.toLocaleString() }}</span>
+                  <span v-else>{{ toDivide(item) }}</span>
                 </td>
                 <td>
                   100%
                 </td>
                 <td v-for="(item,key) in items.comparative_table_result.bottomData[2]" v-if="key == filters.values">
                   <span v-if="item == null">0</span>
-                  <span v-else>{{ item.toLocaleString() }}%</span>
+                  <span v-else>{{ toDivide(item) }}%</span>
                 </td>
               </tr>
               </tbody>
@@ -814,6 +822,7 @@
       },
 
       data: () => ({
+        test2:222222222222,
         test:'',
         series: [2, 4, 1, 2, 1, 1],
         buttonOneIsPressed: true,
@@ -834,6 +843,21 @@
       }),
 
       methods: {
+        toDivide(numberInt) {
+          var int = String(Math.trunc(numberInt));
+          if(int.length <= 3) return int;
+          var space = 0;
+          var number = '';
+          for(var i = int.length - 1; i >= 0; i--) {
+            if(space == 3) {
+              number = ' ' + number;
+              space = 0;
+            }
+            number = int.charAt(i) + number;
+            space++;
+          }
+          return number;
+        },
         changeType(value) {
           this.filters.query_type = value;
         },
@@ -869,12 +893,12 @@
         setComparativeTableData(response, id) {
           this.comparative_table_results[id].comparative_table_result = response;
           this.setIsLoading(false);
-          this.clearFilter();
+          //this.clearFilter();
         },
         setPivotTableData(response, id) {
           this.pivot_table_results[id].pivot_table_result = response;
           this.setIsLoading(false);
-          this.clearFilter();
+          //this.clearFilter();
         },
 
         exportTableToExcel(tableID, filename = '') {
@@ -1044,7 +1068,7 @@
               this.lineCharts[id].lineChartOptions.xaxis.categories = response.xaxis;
               this.showLine.property = true;
               this.setIsLoading(false);
-              this.clearFilter();
+              //this.clearFilter();
               break;
             case 'area':
               response.series.forEach(item => {
@@ -1053,7 +1077,7 @@
               this.areaCharts[id].areaChartOptions.xaxis.categories = response.xaxis;
               this.showArea.property = true;
               this.setIsLoading(false);
-              this.clearFilter();
+              //this.clearFilter();
               break;
             case 'bar':
               response.series.forEach(item => {
@@ -1062,7 +1086,7 @@
               this.barCharts[id].barChartOptions.xaxis.categories = response.xaxis;
               this.showBar.property = true;
               this.setIsLoading(false);
-              this.clearFilter();
+              //this.clearFilter();
               break;
             case 'pie':
               this.pieCharts[id].pieChartOptions.labels = response.xaxis;
@@ -1070,7 +1094,7 @@
               this.pieCharts[id].pieChartDatas.name = response.series[0].name;
               this.showPie.property = true;
               this.setIsLoading(false);
-              this.clearFilter();
+              //this.clearFilter();
               break;
             default:
               break;
@@ -1145,6 +1169,7 @@
         },
       },
     }
+
 </script>
 
 <style scoped>

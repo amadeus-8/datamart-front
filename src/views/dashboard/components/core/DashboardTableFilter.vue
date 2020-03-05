@@ -73,7 +73,7 @@
 
       <v-tab-item :key="1" value="vehicle">
         <v-select :items="[{category: 'Все', id: null}].concat(computedValues.vehicle_year_categories)"
-                  label="Категория"
+                  label="Категория года выпуска"
                   item-text="category"
                   item-value="id"
                   v-model="filters.vehicle_year_category"></v-select>

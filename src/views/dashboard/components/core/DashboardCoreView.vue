@@ -318,6 +318,10 @@
             value: 'vts_overall_sum',
           },
           {
+            text: 'Сумма выплаты',
+            value: 'payout_sum',
+          },
+          {
             text: 'Кол-во Убытков общее',
             value: 'overall_lost_count',
           },

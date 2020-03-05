@@ -43,10 +43,10 @@
 
     data: () => ({
       links: [
-        {
-          href: 'https://github.com/IlyasAkbergen',
-          text: 'Автор'
-        },
+        // {
+        //   href: 'https://github.com/IlyasAkbergen',
+        //   text: 'Автор'
+        // },
         {
           href: 'https://kupipolis.kz',
           text: 'Centras Insurance'

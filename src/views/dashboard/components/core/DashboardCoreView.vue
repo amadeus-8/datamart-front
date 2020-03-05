@@ -2,6 +2,19 @@
   <v-content>
 
     <div class="ml-lg-8 mt-5">
+      <v-btn
+        fab
+        small
+        @click.stop="drawer.drawer = !drawer.drawer"
+      >
+        <v-icon v-if="!drawer.drawer">
+          mdi-view-quilt
+        </v-icon>
+
+        <v-icon v-else>
+          mdi-dots-vertical
+        </v-icon>
+      </v-btn>
       <v-btn tile small outlined color="success active" @click="getSavedData()">Сохраненные данные</v-btn>
       <v-btn tile small outlined color="success" @click="clearSavedData()" >Витрина данных</v-btn>
       <v-btn tile small outlined color="success" v-if="currentUser.length == 0" @click="getUsers()" >Пользователи</v-btn>

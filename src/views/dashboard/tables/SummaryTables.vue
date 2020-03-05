@@ -2,13 +2,6 @@
   <v-container id="extended-tables"
                fluid
                tag="section">
-    <v-btn
-      color="pink"
-      dark
-      @click.stop="drawer.drawer = !drawer.drawer"
-    >
-      Toggle
-    </v-btn>
 
     <base-material-card  v-if="currentUser.length > 0" color="success" icon="mdi-clipboard-text" inline title="Пользователи" class="px-5 py-3">
       <!--  Текущии пользователь  -->

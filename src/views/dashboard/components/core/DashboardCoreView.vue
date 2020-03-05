@@ -3,6 +3,7 @@
 
     <div class="ml-lg-8 mt-5">
       <v-btn
+        color="green"
         fab
         small
         @click.stop="drawer.drawer = !drawer.drawer"

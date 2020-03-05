@@ -13,7 +13,8 @@
                             :block="block"
                             :getSavedData="getSavedData"
                             :usersData="usersData"
-                            :getUsers="getUsers"></dashboard-core-drawer>
+                            :getUsers="getUsers"
+                            :drawer="drawer"></dashboard-core-drawer>
     <summary-tables :filters="filters"
                     :values="values"
                     :computedValues="computedValues"
@@ -37,7 +38,8 @@
                     :deleteUser="deleteUser"
                     :currentUser="currentUser"
                     :changeCurrentUserData="changeCurrentUserData"
-                    :getSavedData="getSavedData">
+                    :getSavedData="getSavedData"
+                    :drawer="drawer">
 
     </summary-tables>
     <div class="text-center">
@@ -60,6 +62,7 @@
     },
 
     data: () => ({
+      drawer: { drawer: null},
       pivot_table_results: [{
         pivot_table_result: []
       }],

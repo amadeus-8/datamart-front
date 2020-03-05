@@ -4,7 +4,8 @@
                        mobile-break-point="960"
                        app
                        width="260"
-                       v-bind="$attrs">
+                       v-bind="$attrs"
+                       v-model="drawer.drawer">
     <v-list-item two-line>
       <v-list-item-content>
         <v-list-item-title class="text-uppercase font-weight-regular display-2">
@@ -125,12 +126,12 @@
       block: Object,
       getSavedData: Function,
       getUsers: Function,
+      drawer: Object,
     },
 
     data: () => ({
       from_menu: false,
       to_menu: false,
-      drawer: true,
 
       tables: [
         {

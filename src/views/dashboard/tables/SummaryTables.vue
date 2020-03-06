@@ -481,12 +481,30 @@
             <template v-slot:default>
               <thead>
                 <tr v-if="items.pivot_table_result.labels.length > 0">
-                  <th class="text-left"><div @click="sortTable('key',key,'pivot')">qwe{{ items.pivot_table_result.property }}</div></th>
-                  <th v-for="(item) in items.pivot_table_result.labels" @click="sortTable( 'item',key,'pivot',item)">{{ item }}</th>
+                  <th class="text-left text-start sortable active asc">
+                    <div @click="sortTable('key',key,'pivot')">
+                      {{ items.pivot_table_result.property }}
+                      <span class="sortView" v-if="sortType == 'desc'">&nbsp;&uarr;</span>
+                      <span class="sortView" v-else>&nbsp;&darr;</span>
+                    </div>
+                  </th>
+                  <th class="sortable" v-for="(item) in items.pivot_table_result.labels" @click="sortTable( 'item',key,'pivot',item)">
+                    <div>
+                      {{ item }}
+                      <span class="sortView" v-if="sortType == 'desc'">&nbsp;&uarr;</span>
+                      <span class="sortView" v-else>&nbsp;&darr;</span>
+                    </div>
+                  </th>
                 </tr>
                 <tr  v-else>
-                  <th class="text-left"><div @click="sortTable('key',key,'pivot')">{{ items.pivot_table_result.property }}</div></th>
-                  <th @click="sortTable( 'item',key,'pivot')">
+                  <th class="text-left sortable">
+                    <div @click="sortTable('key',key,'pivot')">
+                      {{ items.pivot_table_result.property }}
+                      <span class="sortView" v-if="sortType == 'desc'">&nbsp;&uarr;</span>
+                      <span class="sortView" v-else>&nbsp;&darr;</span>
+                    </div>
+                  </th>
+                  <th class="sortable" @click="sortTable( 'item',key,'pivot',0)">
                     <span v-if="filters.values === 'ogpo_vts_result' || filters.values === 'ogpo_vts_count'">Премия ОС ГПО ВТС</span>
                     <span v-if="filters.values === 'vts_cross_result' || filters.values === 'avg_cross_result'">Премии др.продукты (Кросс + доброволки)</span>
                     <span v-if="filters.values === 'vts_overall_sum' || filters.values === 'avg_sum'">Сумма премий ВТС</span>
@@ -504,6 +522,8 @@
                     <span v-if="filters.values === 'accepted_claims'">Статусы - Подписан, Урегулировано</span>
                     <span v-if="filters.values === 'payout_reject_claims'">Статус - Отказ в возмещении</span>
                     <span v-if="filters.values === 'client_reject_claims'">Статус - Отказ заявителя</span>
+                    <span class="sortView" v-if="sortType == 'desc'">&nbsp;&uarr;</span>
+                    <span class="sortView" v-else>&nbsp;&darr;</span>
                   </th>
                 </tr>
               </thead>
@@ -594,8 +614,18 @@
             <template v-slot:default>
               <thead>
               <tr>
-                <th class="text-left">{{ items.comparative_table_result.property }}</th>
-                <th v-for="(item) in items.comparative_table_result.labels">{{ item }}</th>
+                <th class="text-left sortable">
+                  <div @click="sortTable('key',key,'comparative')">
+                    {{ items.comparative_table_result.property }}
+                    <span class="sortView" v-if="sortType == 'desc'">&nbsp;&uarr;</span>
+                    <span class="sortView" v-else>&nbsp;&darr;</span>
+                  </div>
+                </th>
+                <th  class="sortable" v-for="(item,index) in items.comparative_table_result.labels" @click="sortTable( 'item',key,'comparative',index)">
+                  {{ item }}
+                  <span class="sortView" v-if="sortType == 'desc'">&nbsp;&uarr;</span>
+                  <span class="sortView" v-else>&nbsp;&darr;</span>
+                </th>
               </tr>
               </thead>
               <tbody>
@@ -842,12 +872,14 @@
       }),
 
       methods: {
-        sortTable(column,indexData,type,indexIn = 0){
+        sortTable(column,indexData,type,indexIn){
           var vm = this;
           var ordered = {};
           var unordered = {};
           if (type === 'pivot') {
             unordered = this.pivot_table_results[indexData].pivot_table_result.data;
+          } else {
+            unordered = this.comparative_table_results[indexData].comparative_table_result.data;
           }
           if(column == 'key') {   // Если сортируем по ключю
             Object.keys(unordered).sort(this.dynamicsort(null, this.sortType)).forEach(function (key) {
@@ -856,20 +888,24 @@
           } else {
             var newArr = [];
             var dataArr = {};
+            var i = 1;
             for(var key in unordered) {
-              var ds = { number: parseInt(unordered[key][indexIn][vm.filters.values]), key: key };
+              var id = Math.round(Math.random()*1000000);
+              var ds = { number: parseInt(unordered[key][indexIn][vm.filters.values]), key: key, id:id };
               newArr.push(ds);
-              var ttt = unordered[key][indexIn][vm.filters.values]+key;
-              dataArr[ttt] = { data: unordered[key], key: key };
+              dataArr[id] = { data: unordered[key], key: key };
+              i++;
             }
-
             newArr.sort(this.dynamicsort('number', this.sortType)).forEach(function (key) {
-              var kkk = key['number']+key['key'];
-              ordered[dataArr[kkk]['key']] = dataArr[kkk]['data'];
+              var id = key['id'];
+              ordered[dataArr[id]['key']] = dataArr[id]['data'];
             });
           }
-          //console.log(ordered);
-          this.pivot_table_results[indexData].pivot_table_result.data = ordered;
+          if (type === 'pivot') {
+            this.pivot_table_results[indexData].pivot_table_result.data = ordered;
+          } else {
+            this.comparative_table_results[indexData].comparative_table_result.data = ordered;
+          }
           ordered = {};
           newArr = [];
           dataArr = {};
@@ -889,6 +925,12 @@
             if(property != null){
               aProp = a[property];
               bProp = b[property];
+              if(isNaN(aProp)){
+                aProp = 0;
+              }
+              if(isNaN(bProp)){
+                bProp = 0;
+              }
             }
             // a should come before b in the sorted order
             if(aProp < bProp){
@@ -1233,5 +1275,15 @@
 </script>
 
 <style scoped>
+  .sortable .sortView {
+    visibility: hidden;
+  }
 
+  .sortable {
+    cursor:pointer;
+  }
+
+  .sortable:hover .sortView{
+    visibility: visible;
+  }
 </style>

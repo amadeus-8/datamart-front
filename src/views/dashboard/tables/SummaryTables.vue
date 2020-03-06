@@ -477,35 +477,35 @@
           </template>
         </v-menu>
         <div v-if="Object.keys(items.pivot_table_result).length > 0">
-          <v-simple-table :id="'pivotTable-'+key" sortBy="Город">
+          <v-simple-table :id="'pivotTable-'+key">
             <template v-slot:default>
               <thead>
-              <tr v-if="items.pivot_table_result.labels.length > 0">
-                <th class="text-left">{{ items.pivot_table_result.property }}</th>
-                <th v-for="(item) in items.pivot_table_result.labels">{{ item }}</th>
-              </tr>
-              <tr  v-else>
-                <th class="text-left">{{ items.pivot_table_result.property }}</th>
-                <th>
-                  <span v-if="filters.values === 'ogpo_vts_result' || filters.values === 'ogpo_vts_count'">Премия ОС ГПО ВТС</span>
-                  <span v-if="filters.values === 'vts_cross_result' || filters.values === 'avg_cross_result'">Премии др.продукты (Кросс + доброволки)</span>
-                  <span v-if="filters.values === 'vts_overall_sum' || filters.values === 'avg_sum'">Сумма премий ВТС</span>
-                  <span v-if="filters.values === 'payout_sum'">Сумма выплаты</span>
-                  <span v-if="filters.values === 'medical_count'">Медицина (Все из узла ДМС)</span>
-                  <span v-if="filters.values === 'megapolis_count'">Мегаполис (Мегаполис, Мегаполис 100,  Страхование имущества)</span>
-                  <span v-if="filters.values === 'amortization_count'">Амортизация</span>
-                  <span v-if="filters.values === 'kasko_count'">Каско (Автокаско, Классик, Прогресс)</span>
-                  <span v-if="filters.values === 'kommesk_comfort_count'">Коммеск-Комфорт</span>
-                  <span v-if="filters.values === 'tour_count'">ВЗР (все из узла страхование путеш-в)</span>
-                  <span v-if="filters.values === 'overall_lost_count'">Кол-во Убытков общее</span>
-                  <span v-if="filters.values === 'vts_lost_count'">Кол-во Убытков по ОС ГПО ВТС</span>
-                  <span v-if="filters.values === 'declared_claims'">Заявленные Претензии(статус - Оформление)</span>
-                  <span v-if="filters.values === 'pending_claims'">Рассмотрение (Статусы - рассм-ся, на подписи)</span>
-                  <span v-if="filters.values === 'accepted_claims'">Статусы - Подписан, Урегулировано</span>
-                  <span v-if="filters.values === 'payout_reject_claims'">Статус - Отказ в возмещении</span>
-                  <span v-if="filters.values === 'client_reject_claims'">Статус - Отказ заявителя</span>
-                </th>
-              </tr>
+                <tr v-if="items.pivot_table_result.labels.length > 0">
+                  <th class="text-left"><div @click="sortTable('key',key,'pivot')">qwe{{ items.pivot_table_result.property }}</div></th>
+                  <th v-for="(item) in items.pivot_table_result.labels" @click="sortTable( 'item',key,'pivot',item)">{{ item }}</th>
+                </tr>
+                <tr  v-else>
+                  <th class="text-left"><div @click="sortTable('key',key,'pivot')">{{ items.pivot_table_result.property }}</div></th>
+                  <th @click="sortTable( 'item',key,'pivot')">
+                    <span v-if="filters.values === 'ogpo_vts_result' || filters.values === 'ogpo_vts_count'">Премия ОС ГПО ВТС</span>
+                    <span v-if="filters.values === 'vts_cross_result' || filters.values === 'avg_cross_result'">Премии др.продукты (Кросс + доброволки)</span>
+                    <span v-if="filters.values === 'vts_overall_sum' || filters.values === 'avg_sum'">Сумма премий ВТС</span>
+                    <span v-if="filters.values === 'payout_sum'">Сумма выплаты</span>
+                    <span v-if="filters.values === 'medical_count'">Медицина (Все из узла ДМС)</span>
+                    <span v-if="filters.values === 'megapolis_count'">Мегаполис (Мегаполис, Мегаполис 100,  Страхование имущества)</span>
+                    <span v-if="filters.values === 'amortization_count'">Амортизация</span>
+                    <span v-if="filters.values === 'kasko_count'">Каско (Автокаско, Классик, Прогресс)</span>
+                    <span v-if="filters.values === 'kommesk_comfort_count'">Коммеск-Комфорт</span>
+                    <span v-if="filters.values === 'tour_count'">ВЗР (все из узла страхование путеш-в)</span>
+                    <span v-if="filters.values === 'overall_lost_count'">Кол-во Убытков общее</span>
+                    <span v-if="filters.values === 'vts_lost_count'">Кол-во Убытков по ОС ГПО ВТС</span>
+                    <span v-if="filters.values === 'declared_claims'">Заявленные Претензии(статус - Оформление)</span>
+                    <span v-if="filters.values === 'pending_claims'">Рассмотрение (Статусы - рассм-ся, на подписи)</span>
+                    <span v-if="filters.values === 'accepted_claims'">Статусы - Подписан, Урегулировано</span>
+                    <span v-if="filters.values === 'payout_reject_claims'">Статус - Отказ в возмещении</span>
+                    <span v-if="filters.values === 'client_reject_claims'">Статус - Отказ заявителя</span>
+                  </th>
+                </tr>
               </thead>
               <tbody>
               <tr v-for="(item, key) in items.pivot_table_result.data">
@@ -822,8 +822,7 @@
       },
 
       data: () => ({
-        test2:222222222222,
-        test:'',
+        sortType: 'desc',
         series: [2, 4, 1, 2, 1, 1],
         buttonOneIsPressed: true,
         buttonTwoIsPressed: false,
@@ -843,6 +842,67 @@
       }),
 
       methods: {
+        sortTable(column,indexData,type,indexIn = 0){
+          var vm = this;
+          var ordered = {};
+          var unordered = {};
+          if (type === 'pivot') {
+            unordered = this.pivot_table_results[indexData].pivot_table_result.data;
+          }
+          if(column == 'key') {   // Если сортируем по ключю
+            Object.keys(unordered).sort(this.dynamicsort(null, this.sortType)).forEach(function (key) {
+              ordered[key] = unordered[key];
+            });
+          } else {
+            var newArr = [];
+            var dataArr = {};
+            for(var key in unordered) {
+              var ds = { number: parseInt(unordered[key][indexIn][vm.filters.values]), key: key };
+              newArr.push(ds);
+              var ttt = unordered[key][indexIn][vm.filters.values]+key;
+              dataArr[ttt] = { data: unordered[key], key: key };
+            }
+
+            newArr.sort(this.dynamicsort('number', this.sortType)).forEach(function (key) {
+              var kkk = key['number']+key['key'];
+              ordered[dataArr[kkk]['key']] = dataArr[kkk]['data'];
+            });
+          }
+          //console.log(ordered);
+          this.pivot_table_results[indexData].pivot_table_result.data = ordered;
+          ordered = {};
+          newArr = [];
+          dataArr = {};
+        },
+
+        dynamicsort(property,order) {
+          var sort_order = 1;
+          if(order === "desc"){
+            sort_order = -1;
+            this.sortType = 'asc';
+          } else {
+            this.sortType = 'desc';
+          }
+          return function (a, b){
+            var aProp = a;
+            var bProp = b;
+            if(property != null){
+              aProp = a[property];
+              bProp = b[property];
+            }
+            // a should come before b in the sorted order
+            if(aProp < bProp){
+              return -1 * sort_order;
+              // a should come after b in the sorted order
+            }else if(aProp > bProp){
+              return 1 * sort_order;
+              // a and b are the same
+            }else{
+              return 0 * sort_order;
+            }
+          }
+        },
+
         toDivide(numberInt) {
           var int = String(Math.trunc(numberInt));
           if(int.length <= 3) return int;

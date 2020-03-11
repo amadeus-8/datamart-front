@@ -48,7 +48,8 @@
       </v-flex>
     </v-list>
 
-    <v-list class="pl-3 pr-3 pt-0 pb-0">
+    <!-- Здесь фильтр для витрины -->
+    <v-list class="pl-3 pr-3 pt-0 pb-0" v-show="!this.block.savedData">
       <div class="text-xs-center pl-2 pb-2 body-2 text-uppercase sidebar-filter">Период</div>
       <v-menu v-model="from_menu"
               :close-on-content-click="false"
@@ -86,6 +87,50 @@
                        @input="to_menu = false"></v-date-picker>
       </v-menu>
     </v-list>
+
+    <!-- Здесь фильтр для сохраненных данных -->
+
+    <v-list class="pl-3 pr-3 pt-0 pb-0" v-show="this.block.savedData">
+      <div class="text-xs-center pl-2 pb-2 body-2 text-uppercase sidebar-filter">Период</div>
+      <v-menu v-model="saved_from_menu"
+              :close-on-content-click="false"
+              :nudge-right="40"
+              transition="scale-transition"
+              offset-y
+              min-width="290px">
+        <template v-slot:activator="{ on }">
+          <v-text-field v-model="filters.saved_from_date"
+                        label="Дата начала"
+                        prepend-icon="mdi-calendar"
+                        readonly
+                        v-on="on"></v-text-field>
+        </template>
+        <v-date-picker v-model="filters.saved_from_date"
+                       @input="saved_from_menu = false"
+                       locale="ru-ru"></v-date-picker>
+      </v-menu>
+
+      <v-menu v-model="saved_to_menu"
+              :close-on-content-click="false"
+              :nudge-right="40"
+              transition="scale-transition"
+              offset-y
+              min-width="290px">
+        <template v-slot:activator="{ on }">
+          <v-text-field v-model="filters.saved_to_date"
+                        label="Дата окончания"
+                        prepend-icon="mdi-calendar"
+                        readonly
+                        v-on="on"></v-text-field>
+        </template>
+        <v-date-picker v-model="filters.saved_to_date"
+                       locale="ru-ru"
+                       @input="saved_to_menu = false"
+                       @change="changeSavedDataFilter"></v-date-picker>
+      </v-menu>
+    </v-list>
+
+
 
     <v-list class="pl-3 pr-3 pt-0 pb-0">
       <div class="text-xs-center pl-2 pb-2 body-2 text-uppercase sidebar-filter">Вид</div>
@@ -132,6 +177,8 @@
     data: () => ({
       from_menu: false,
       to_menu: false,
+      saved_from_menu: false,
+      saved_to_menu: false,
 
       tables: [
         {
@@ -313,6 +360,9 @@
           // this.values.view_type.push(lastElement);
           this.getSavedData();
         }
+      },
+      changeSavedDataFilter() {
+        this.getSavedData();
       }
     }
   }

@@ -203,6 +203,8 @@
       filters: {
         from_date: new Date('2019-01-01').toISOString().substr(0, 10),
         to_date: new Date('2019-01-30').toISOString().substr(0, 10),
+        saved_from_date: new Date('2020-03-10').toISOString().substr(0, 10),
+        saved_to_date: new Date('2020-03-10').toISOString().substr(0, 10),
         region_id: null,
         age_category: null,
         gender: null,
@@ -373,8 +375,8 @@
               {
                 take: this.savedData.countOnPage,
                 type: this.values.view_type[i],
-                from_date: this.filters.from_date,
-                to_date: this.filters.to_date
+                from_date: this.filters.saved_from_date,
+                to_date: this.filters.saved_to_date
               }, item).then(response => {
                 if(item === 'pivot') {
                   this.setPivotTable(response.data);

@@ -1,5 +1,5 @@
 <template>
-  <f-flex>
+  <v-flex>
     <v-flex xs12 mb-10>
       &nbsp;
     </v-flex>
@@ -39,7 +39,7 @@
         </v-row>
       </v-container>
     </v-footer>
-  </f-flex>
+  </v-flex>
 </template>
 
 <script>

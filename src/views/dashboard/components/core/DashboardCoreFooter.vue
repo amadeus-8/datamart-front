@@ -1,40 +1,45 @@
 <template>
-  <v-footer absolute
-    id="dashboard-core-footer"
-  >
-    <v-container>
-      <v-row
-        align="center"
-        no-gutters
-      >
-        <v-col
-          v-for="(link, index) in links"
-          :key="index"
-          class="text-center mb-sm-0 mb-5"
-          cols="auto"
+  <f-flex>
+    <v-flex xs12 mb-10>
+      &nbsp;
+    </v-flex>
+    <v-footer absolute
+      id="dashboard-core-footer"
+    >
+      <v-container>
+        <v-row
+          align="center"
+          no-gutters
         >
-          <a
-            :href="link.href"
-            class="mr-0"
-            rel="noopener"
-            target="_blank"
-            v-text="link.text"
-          />
-        </v-col>
+          <v-col
+            v-for="(link, index) in links"
+            :key="index"
+            class="text-center mb-sm-0 mb-5"
+            cols="auto"
+          >
+            <a
+              :href="link.href"
+              class="mr-0"
+              rel="noopener"
+              target="_blank"
+              v-text="link.text"
+            />
+          </v-col>
 
-        <v-spacer class="hidden-sm-and-down" />
+          <v-spacer class="hidden-sm-and-down" />
 
-        <v-col
-          cols="12"
-          md="auto"
-        >
-          <div class="body-1 font-weight-light pt-6 pt-md-0 text-center">
-            &copy; 2020
-          </div>
-        </v-col>
-      </v-row>
-    </v-container>
-  </v-footer>
+          <v-col
+            cols="12"
+            md="auto"
+          >
+            <div class="body-1 font-weight-light pt-6 pt-md-0 text-center">
+              &copy; 2020
+            </div>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-footer>
+  </f-flex>
 </template>
 
 <script>

@@ -38,7 +38,8 @@
                     :buttonTwoIsPressed="buttonTwoIsPressed"
                     :exportTableToExcel="exportTableToExcel"
                     :switchTableType="switchTableType"
-                    :buttonThreeIsPressed="buttonThreeIsPressed">
+                    :buttonThreeIsPressed="buttonThreeIsPressed"
+                    :getLabels="getLabels">
     </saved-data>
 
     <div id="newData" v-if="!this.block.savedData">
@@ -49,14 +50,8 @@
       </v-btn>
 
       <base-material-card color="success" icon="mdi-clipboard-text" inline title="Сводная таблица" class="px-5 py-3" v-if="values.view_type.includes('pivot')" v-for="items,key in pivot_table_results">
-        <v-flex xs12>
-          <v-select :items="computedValues.filter_values"
-                    label="Значения"
-                    item-text="text"
-                    item-value="value"
-                    v-model="filters.values"
-                    v-if="Object.keys(items.pivot_table_result).length > 0">
-          </v-select>
+        <v-flex xs12 mb-3 mt-3>
+          <span v-if="Object.keys(items.pivot_table_result).length > 0">Значение: {{ getLabels(filters.values) }}</span>
         </v-flex>
         <v-menu :close-on-content-click="false"
                 :nudge-right="40"
@@ -72,7 +67,7 @@
           </dashboard-table-filter>
           <template v-slot:activator="{ on }">
             <div class="d-flex justify-space-between">
-              <v-icon color="success" v-on="on" @click="changeType('pivot')">mdi-settings</v-icon>
+              <v-icon color="success" class="filter-menu-icon" v-on="on" @click="changeType('pivot')">&nbsp;</v-icon>
               <div class="d-flex">
                 <v-btn v-if="filters.values === 'ogpo_vts_result' ||
                          filters.values === 'ogpo_vts_count' ||
@@ -81,19 +76,19 @@
                          filters.values === 'vts_overall_sum' ||
                          filters.values === 'avg_sum'"
                        small outlined tile
-                       :color="buttonOneIsPressed ? 'success' : 'warning'"
+                       :color="buttonOneIsPressed ? 'success' : 'grey'"
                        @click="switchTableType('sum')">Сумма</v-btn>
                 <v-btn v-if="filters.values === 'vts_cross_result' ||
                          filters.values === 'avg_cross_result' ||
                          filters.values === 'vts_overall_sum' ||
                          filters.values === 'avg_sum'"
                        small outlined tile
-                       :color="buttonTwoIsPressed ? 'success' : 'warning'"
+                       :color="buttonTwoIsPressed ? 'success' : 'grey'"
                        @click="switchTableType('avg')">Среднее</v-btn>
                 <v-btn v-if="filters.values === 'ogpo_vts_result' ||
                          filters.values === 'ogpo_vts_count'"
                        small outlined tile
-                       :color="buttonThreeIsPressed ? 'success' : 'warning'"
+                       :color="buttonThreeIsPressed ? 'success' : 'grey'"
                        @click="switchTableType('amount')">Количество</v-btn>
               </div>
             </div>
@@ -105,13 +100,13 @@
               <thead>
                 <tr v-if="items.pivot_table_result.labels.length > 0">
                   <th class="text-left text-start sortable active asc">
-                    <div @click="sortTable('key',key,'pivot',null)">
+                    <div @click="sortTable('key',key,'pivot',null,null,null)">
                       {{ items.pivot_table_result.property }}
                       <span class="sortView" v-if="sortType == 'desc'">&nbsp;&uarr;</span>
                       <span class="sortView" v-else>&nbsp;&darr;</span>
                     </div>
                   </th>
-                  <th class="sortable" v-for="(item) in items.pivot_table_result.labels" @click="sortTable( 'item',key,'pivot',item)">
+                  <th class="sortable" v-for="(item) in items.pivot_table_result.labels" @click="sortTable( 'item',key,'pivot',item,null,null)">
                     <div>
                       {{ item }}
                       <span class="sortView" v-if="sortType == 'desc'">&nbsp;&uarr;</span>
@@ -121,13 +116,13 @@
                 </tr>
                 <tr  v-else>
                   <th class="text-left sortable">
-                    <div @click="sortTable('key',key,'pivot',null)">
+                    <div @click="sortTable('key',key,'pivot',null,null,null)">
                       {{ items.pivot_table_result.property }}
                       <span class="sortView" v-if="sortType == 'desc'">&nbsp;&uarr;</span>
                       <span class="sortView" v-else>&nbsp;&darr;</span>
                     </div>
                   </th>
-                  <th class="sortable" @click="sortTable( 'item',key,'pivot',0)">
+                  <th class="sortable" @click="sortTable( 'item',key,'pivot',0,null,null)">
                     <span v-if="filters.values === 'ogpo_vts_result' || filters.values === 'ogpo_vts_count'">Премия ОС ГПО ВТС</span>
                     <span v-if="filters.values === 'vts_cross_result' || filters.values === 'avg_cross_result'">Премии др.продукты (Кросс + доброволки)</span>
                     <span v-if="filters.values === 'vts_overall_sum' || filters.values === 'avg_sum'">Сумма премий ВТС</span>
@@ -164,7 +159,7 @@
             </template>
           </v-simple-table>
           <div class="d-flex justify-end mt-2">
-            <v-btn tile small color="success" class="mr-0" @click="exportTableToExcel('pivotTable-'+key)">
+            <v-btn tile small color="success" class="mr-0" @click="exportTableToExcel('pivotTable-'+key,'Сводная таблица')">
               <v-icon small color="white" class="mr-1">mdi-arrow-down-bold-box-outline</v-icon>
               <span>Скачать</span>
             </v-btn>
@@ -184,13 +179,8 @@
                           class="px-5 py-3 mb-5"
                           v-if="values.view_type.includes('comparative')"
                           v-for="items,key in comparative_table_results">
-        <v-flex xs12>
-          <v-select :items="computedValues.filter_values"
-                    label="Значения"
-                    item-text="text"
-                    item-value="value"
-                    v-model="filters.values"
-                    v-if="Object.keys(items.comparative_table_result).length > 0"></v-select>
+        <v-flex xs12 mb-3 mt-3>
+          Значение: {{ getLabels(filters.values) }}
         </v-flex>
         <v-menu :close-on-content-click="false"
                 :nudge-right="40"
@@ -205,7 +195,7 @@
                                   :computedValues="computedValues"></dashboard-table-filter>
           <template v-slot:activator="{ on }">
             <div class="d-flex justify-space-between">
-              <v-icon color="success" v-on="on"  @click="changeType('comparative')">mdi-settings</v-icon>
+              <v-icon color="success" class="filter-menu-icon" v-on="on"  @click="changeType('comparative')">&nbsp;</v-icon>
               <div class="d-flex">
                 <v-btn v-if="filters.values === 'ogpo_vts_result' ||
                          filters.values === 'ogpo_vts_count' ||
@@ -214,19 +204,19 @@
                          filters.values === 'vts_overall_sum' ||
                          filters.values === 'avg_sum'"
                        small outlined tile
-                       :color="buttonOneIsPressed ? 'success' : 'warning'"
+                       :color="buttonOneIsPressed ? 'success' : 'grey'"
                        @click="switchTableType('sum')">Сумма</v-btn>
                 <v-btn v-if="filters.values === 'vts_cross_result' ||
                          filters.values === 'avg_cross_result' ||
                          filters.values === 'vts_overall_sum' ||
                          filters.values === 'avg_sum'"
                        small outlined tile
-                       :color="buttonTwoIsPressed ? 'success' : 'warning'"
+                       :color="buttonTwoIsPressed ? 'success' : 'grey'"
                        @click="switchTableType('avg')">Среднее</v-btn>
                 <v-btn v-if="filters.values === 'ogpo_vts_result' ||
                          filters.values === 'ogpo_vts_count'"
                        small outlined tile
-                       :color="buttonThreeIsPressed ? 'success' : 'warning'"
+                       :color="buttonThreeIsPressed ? 'success' : 'grey'"
                        @click="switchTableType('amount')">Количество</v-btn>
               </div>
             </div>
@@ -238,13 +228,13 @@
               <thead>
               <tr>
                 <th class="text-left sortable">
-                  <div @click="sortTable('key',key,'comparative',null)">
+                  <div @click="sortTable('key',key,'comparative',null,null,null)">
                     {{ items.comparative_table_result.property }}
                     <span class="sortView" v-if="sortType == 'desc'">&nbsp;&uarr;</span>
                     <span class="sortView" v-else>&nbsp;&darr;</span>
                   </div>
                 </th>
-                <th  class="sortable" v-for="(item,index) in items.comparative_table_result.labels" @click="sortTable( 'item',key,'comparative',index)">
+                <th  class="sortable" v-for="(item,index) in items.comparative_table_result.labels" @click="sortTable( 'item',key,'comparative',index,null,null)">
                   {{ item }}
                   <span class="sortView" v-if="sortType == 'desc'">&nbsp;&uarr;</span>
                   <span class="sortView" v-else>&nbsp;&darr;</span>
@@ -297,7 +287,7 @@
             </template>
           </v-simple-table>
           <div class="d-flex justify-end mt-2">
-            <v-btn tile small color="success" class="mr-0" @click="exportTableToExcel('comparativeTable-'+key)">
+            <v-btn tile small color="success" class="mr-0" @click="exportTableToExcel('comparativeTable-'+key,'Сравнительная таблица')">
               <v-icon small color="white" class="mr-1">mdi-arrow-down-bold-box-outline</v-icon>
               <span>Скачать</span>
             </v-btn>
@@ -324,7 +314,7 @@
               </dashboard-graph-filter>
               <template v-slot:activator="{ on }">
                 <div class="d-flex justify-space-between">
-                  <v-icon color="success" v-on="on" @click="changeType('line')">mdi-settings</v-icon>
+                  <v-icon color="success" class="filter-menu-icon" v-on="on" @click="changeType('line')">&nbsp;</v-icon>
                 </div>
               </template>
             </v-menu>
@@ -355,7 +345,7 @@
                                       :computedValues="computedValues"></dashboard-graph-filter>
               <template v-slot:activator="{ on }">
                 <div class="d-flex justify-space-between">
-                  <v-icon color="success" v-on="on" @click="changeType('area')">mdi-settings</v-icon>
+                  <v-icon color="success" class="filter-menu-icon" v-on="on" @click="changeType('area')">&nbsp;</v-icon>
                 </div>
               </template>
             </v-menu>
@@ -381,7 +371,7 @@
                                       :computedValues="computedValues"></dashboard-graph-filter>
               <template v-slot:activator="{ on }">
                 <div class="d-flex justify-space-between">
-                  <v-icon color="success" v-on="on" @click="changeType('bar')">mdi-settings</v-icon>
+                  <v-icon color="success" class="filter-menu-icon" v-on="on" @click="changeType('bar')">&nbsp;</v-icon>
                 </div>
               </template>
             </v-menu>
@@ -410,7 +400,7 @@
               </dashboard-graph-filter>
               <template v-slot:activator="{ on }">
                 <div class="d-flex justify-space-between">
-                  <v-icon color="success" v-on="on" @click="changeType('pie')">mdi-settings</v-icon>
+                  <v-icon color="success" class="filter-menu-icon" v-on="on" @click="changeType('pie')">&nbsp;</v-icon>
                 </div>
               </template>
             </v-menu>
@@ -497,10 +487,13 @@
       }),
 
       methods: {
-        sortTable(column,indexData,type,indexIn,dataType = null){
+        sortTable(column,indexData,type,indexIn,dataType,filterValues){
           var vm = this;
           var ordered = {};
           var unordered = {};
+          if(filterValues != null){
+            this.filters.values = filterValues;
+          }
           if (type === 'pivot') {
             if(dataType == 'savedData'){
               unordered = this.savedData.pivot_table_result[indexData].data;
@@ -644,7 +637,10 @@
           //this.clearFilter();
         },
 
-        exportTableToExcel(tableID, filename = '') {
+        exportTableToExcel(tableID, filename = '',filter = null) {
+          if(filter != null){
+            this.filters.values = filter;
+          }
           var downloadLink;
           //var dataType = 'application/vnd.ms-excel';
           var tableSelect = document.getElementById(tableID);
@@ -655,7 +651,7 @@
           var dataType = 'data:application/vnd.ms-excel,' + '\uFEFF' + encodeURIComponent(tableHTML);
 
           // Specify file name
-          filename = filename ? filename + '.xls' : 'excel_data.xls';
+          filename = filename ? filename + '.xla' : 'excel_data.xla';
 
           // Create download link element
           downloadLink = document.createElement("a");
@@ -926,5 +922,42 @@
 
   .sortable:hover .sortView{
     visibility: visible;
+  }
+
+  .mdi-settings::before {
+    content: "\F493";
+  }
+
+  .mdi:before, .mdi-set {
+    display: inline-block;
+    font: normal normal normal 24px/1 "Material Design Icons";
+    font-size: inherit;
+    text-rendering: auto;
+    line-height: inherit;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .v-icon.v-icon::after {
+    background-color: currentColor;
+    border-radius: 50%;
+    content: "";
+    display: inline-block;
+    height: 100%;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    -webkit-transform: scale(1.3);
+    transform: scale(1.3);
+    width: 100%;
+    -webkit-transition: opacity 0.2s cubic-bezier(0.4, 0, 0.6, 1);
+    transition: opacity 0.2s cubic-bezier(0.4, 0, 0.6, 1);
+  }
+
+  .filter-menu-icon {
+    background-image: url(/mdi-settings.jpg);
+    height: 25px;
+    width: 24px;
+    background-size: 24px;
   }
 </style>

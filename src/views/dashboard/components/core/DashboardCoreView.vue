@@ -355,9 +355,9 @@
 
     methods: {
       getSavedData(){
-        var lastElement = this.values.view_type.pop();
-        this.values.view_type = [];
-        this.values.view_type.push(lastElement);
+        // var lastElement = this.values.view_type.pop();
+        // this.values.view_type = [];
+        // this.values.view_type.push(lastElement);
 
         this.setLoading(true);
         if(this.values.view_type.length === 0 || this.values.view_type[0] === undefined){
@@ -366,9 +366,9 @@
 
         for(var i=0; i < this.values.view_type.length;i++)
         {
-          var countType = (this.values.view_type.length-1);
-          if(i === countType) {
-            var item = this.values.view_type[i];
+          // var countType = (this.values.view_type.length-1);
+          // if(i === countType) {
+            let item = this.values.view_type[i];
             axios.post('/get_saved_data',
               {
                 take: this.savedData.countOnPage,
@@ -376,23 +376,23 @@
                 from_date: this.filters.from_date,
                 to_date: this.filters.to_date
               }, item).then(response => {
-              if (item === 'pivot') {
-                this.setPivotTable(response.data);
-              }
-              if (item === 'comparative') {
-                this.setComparativeTable(response.data);
-              }
-              if (item !== 'comparative' && item !== 'pivot') {
-                this.setChartOptions(item, response.data);
-              }
-              this.block.savedData = true;
+                if(item === 'pivot') {
+                  this.setPivotTable(response.data);
+                }
+                if(item === 'comparative') {
+                  this.setComparativeTable(response.data);
+                }
+                if(item !== 'comparative' && item !== 'pivot') {
+                  this.setChartOptions(item, response.data);
+                }
+                this.block.savedData = true;
             }).catch(error => {
               alert(error);
               this.setLoading(false);
             });
-          } else {
-            delete this.values.view_type[i];
-          }
+          // } else {
+          //   delete this.values.view_type[i];
+          // }
         }
       },
       clearSavedData(){
@@ -427,9 +427,10 @@
             response.forEach(item => {
               var xaxisData = null;
               item.series.forEach(items => {
+                items.created_at = item.created_at;
+                items.filter_values = item.filter_values;
                   vm.savedData.lineChartData.push([items]);
               });
-
               xaxisData = {
                 xaxis: {
                   categories: item.xaxis
@@ -445,6 +446,8 @@
             vm.savedData.areaChartOptions = [];
             response.forEach(item => {
               item.series.forEach(items => {
+                items.created_at = item.created_at;
+                items.filter_values = item.filter_values;
                 vm.savedData.areaChartData.push([items]);
               });
               var xaxisData = {
@@ -462,6 +465,8 @@
             vm.savedData.barChartOptions = [];
             response.forEach(item => {
               item.series.forEach(items => {
+                items.created_at = item.created_at;
+                items.filter_values = item.filter_values;
                 vm.savedData.barChartData.push([items]);
               });
               var xaxisData = {
@@ -484,7 +489,9 @@
               item.series.forEach(items => {
                 var data = {
                   data: items.data,
-                  name: items.name
+                  name: items.name,
+                  created_at: item.created_at,
+                  filter_values: item.filter_values
                 }
                 vm.savedData.pieChartDatas.push(data);
               });
